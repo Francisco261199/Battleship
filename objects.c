@@ -1,8 +1,15 @@
 #include <stdio.h>	
 #include <stdlib.h>
 #include <assert.h>
-#include "map.h"
+#include <ncurses.h>
 
+#define HIT 'X'
+#define EMPTY '+'
+#define BOAT 'O'
+#define UP 0
+#define DOWN 1
+#define LEFT 2
+#define RIGHT 3 
 
 typedef struct{
     char **map1;
@@ -37,8 +44,8 @@ BOARD * init_board(int size){
     
      for(int j=0;j<size;j++){
         
-        pGame->map1[i][j]='+';
-        pGame->map2[i][j]='+';
+        pGame->map1[i][j]=EMPTY;
+        pGame->map2[i][j]= EMPTY;
     }
 }
 
@@ -46,12 +53,80 @@ BOARD * init_board(int size){
 
 return pGame;
 }
-SHIP * create_ship(coord * start,int orient,int size,BOARD * game){
- SHIP * newship = (SHIP*)malloc 
 
+
+
+SHIP *create_ship(coord start,int size){
+
+ SHIP *newship = (SHIP*)malloc(sizeof(SHIP*));
+ newship->points= (coord*)malloc(sizeof(coord*));
+ newship->size = size;
+
+
+int ch;
+
+/* Curses Initialisations */
+initscr();
+raw();
+keypad(stdscr, TRUE);
+noecho();
+
+printw("Press # to Exit\n");
+
+while((ch = getch()) != '#')
+{
+switch(ch)
+{
+case KEY_UP:{ 
+for(int i = 0;i<size;i++){
+         newship->points[i].x=(start.x);
+         newship->points[i].y=(start.y)+i;
+        }         
+break;
+}
+case KEY_DOWN:{ 
+for(int i = 0;i<size;i++){
+         newship->points[i].x=(start.x);
+         newship->points[i].y=(start.y)-i;
+        }         
+break;
+}
+case KEY_LEFT: {
+   
+for(int i = 0;i<size;i++){
+         newship->points[i].x=(start.x)-i;
+         newship->points[i].y=(start.y);
+        }         
+break;
+}
+
+case KEY_RIGHT: {
+for(int i = 0;i<size;i++){
+         newship->points[i].x=(start.x)+i;
+         newship->points[i].y=(start.y);
+        }         
+break;
+}
+
+default:
+{
+printw("\nThe pressed key is ");
+attron(A_BOLD);
+printw("%c", ch);
+attroff(A_BOLD);
+break;
+}
+}
+}
+
+
+ 
+return newship;
 
 }
-/*void insert_ship(int player,SHIP ship,BOARD * game){
+
+
+/*void insert_ship(int player,SHIP *ship,BOARD * game){
 
 if (player == 1){
     game->map1[x][y]=ship;
@@ -61,7 +136,6 @@ else
 {
     game->map2[x][y]=ship;
 }
-
 
 
 }
@@ -153,7 +227,10 @@ int main(){
 	system("clear");
 
 BOARD *gameboard=init_board(n);
-
+coord start;
+start.x=3;
+start.y=4;
+SHIP *s =create_ship(start,3);
 //insert_ship(1,2,3,'x',gameboard);
 //insert_ship(2,3,4,'*',gameboard);
 print_game(1,gameboard);
