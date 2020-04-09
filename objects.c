@@ -3,17 +3,27 @@
 #include <assert.h>
 #include <ncurses.h>
 
-#define HIT 'X'
-#define EMPTY '+'
-#define BOAT 'O'
 #define UP 0
 #define DOWN 1
 #define LEFT 2
 #define RIGHT 3 
 
 typedef struct{
-    char **map1;
-    char **map2;
+coord *points;
+int size;
+
+} SHIP;
+
+typedef struct{
+    char state;
+    SHIP *ship;
+    int shot=0;
+
+} Cell;
+
+typedef struct{
+    Cell **map1;
+    Cell **map2;
     int size;
     int state1,state2;
 } BOARD;
@@ -23,11 +33,6 @@ typedef struct Coordinate{
     int y;
 } coord;
 
-typedef struct{
-coord *points;
-int size;
-
-} SHIP;
 
 
 
@@ -35,17 +40,17 @@ BOARD * init_board(int size){
     BOARD * pGame = (BOARD*)malloc(sizeof(BOARD));
 
     pGame->size = size;
-    pGame->map1 = (char**)malloc(size*sizeof(char*));
-    pGame->map2 = (char**)malloc(size*sizeof(char*));
+    pGame->map1 = (Cell**)malloc(size*sizeof(Cell*));
+    pGame->map2 = (Cell**)malloc(size*sizeof(Cell*));
 
     for(int i=0;i<size;i++){
-        pGame->map1[i]=(char*)malloc(size*sizeof(char));
-        pGame->map2[i]=(char*)malloc(size*sizeof(char));
+        pGame->map1[i]=(Cell*)malloc(size*sizeof(Cell));
+        pGame->map2[i]=(Cell*)malloc(size*sizeof(Cell));
     
      for(int j=0;j<size;j++){
         
-        pGame->map1[i][j]=EMPTY;
-        pGame->map2[i][j]= EMPTY;
+        pGame->map1[i][j].state=EMPTY;
+        pGame->map2[i][j].state=EMPTY;
     }
 }
 
@@ -63,64 +68,9 @@ SHIP *create_ship(coord start,int size){
  newship->size = size;
 
 
-int ch;
-
-/* Curses Initialisations */
-initscr();
-raw();
-keypad(stdscr, TRUE);
-noecho();
-
-printw("Press # to Exit\n");
-
-while((ch = getch()) != '#')
-{
-switch(ch)
-{
-case KEY_UP:{ 
-for(int i = 0;i<size;i++){
-         newship->points[i].x=(start.x);
-         newship->points[i].y=(start.y)+i;
-        }         
-break;
-}
-case KEY_DOWN:{ 
-for(int i = 0;i<size;i++){
-         newship->points[i].x=(start.x);
-         newship->points[i].y=(start.y)-i;
-        }         
-break;
-}
-case KEY_LEFT: {
-   
-for(int i = 0;i<size;i++){
-         newship->points[i].x=(start.x)-i;
-         newship->points[i].y=(start.y);
-        }         
-break;
-}
-
-case KEY_RIGHT: {
-for(int i = 0;i<size;i++){
-         newship->points[i].x=(start.x)+i;
-         newship->points[i].y=(start.y);
-        }         
-break;
-}
-
-default:
-{
-printw("\nThe pressed key is ");
-attron(A_BOLD);
-printw("%c", ch);
-attroff(A_BOLD);
-break;
-}
-}
-}
 
 
- 
+
 return newship;
 
 }
