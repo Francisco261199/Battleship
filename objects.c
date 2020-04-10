@@ -40,7 +40,7 @@ typedef struct{
 
 
 GAME * init_board(int size){
-    GAME * pGame = (GAME*)malloc(sizeof(GAME));
+    GAME *pGame = (GAME*)malloc(sizeof(GAME));
 
     pGame->size = size;
     pGame->map1 = (CELL**)malloc(size*sizeof(CELL));
@@ -69,11 +69,37 @@ void rotation (SHIP *ship){
     }
  }
 
-SHIP *create_ship(int x,int y,int orient,int size){
+SHIP *create_ship(int orient,int size){
 
- SHIP *newship = (SHIP*)malloc(sizeof(SHIP));
- newship->size = size;
+ SHIP *newship = (SHIP*)malloc(sizeo(f(SHIP));
+    switch(size){
+        case 2:
+        newship=Destroyer;
+        break;
+
+        case 3:
+        newship=Cruiser;
+        break;
+
+        case 4:
+        newship=Battleship;
+        break;
+
+        case 5: 
+        newship=Carrier;
+        break;
+        
+        case 9:
+        newship=Pickaxe;
+        break;
+
+        default:
+         printf("That size is unavaliable.");
+         break;
+    }
+
  for(int i=0;i<orient;i++) rotation(newship);
+ 
  return newship;
 }
 
@@ -99,16 +125,34 @@ void attack(int x,int y, CELL **map){
       mvprintw(0,20,"HIT");
     }
 }
-/*void insert_ship(int player,SHIP *ship,BOARD * game){
-if (player == 1){
-    game->map1[x][y]=ship;
+void insert_ship(int x,int y,SHIP *ship,CELL **map){
+    int clear=0; // serve para verificar se todas as posições em que queremos inserir estão desocupadas
+    ship.x=x;
+    ship.y=y;
+    
+for(int i=0;i<5;i++){
+    for(int j=0;j<5;i++){
+        if(ship->bitmap[i][j]==NOT_HIT && map[x+i-2][y+j-2].state==NO_SHOT) clear++;
+        }
+    }
+if(clear>=ship.size){
+for(int i=0;i<5;i++){
+    for(int j=0;j<5;i++){
+        if(ship->bitmap[i][j]==NOT_HIT ){
+            map[x+i-2][y+j-2].ship=ship;
+            map[x+i-2][y+j-2].state=NO_HIT;
+
+            
+            }
+        }
+    }
+    
+    }
+
+    else
+        printf("You can't insert your ship here");
+    
 }
-else
-{
-    game->map2[x][y]=ship;
-}
-}
-*/
 
 void print_game(int player,GAME * b){
 
@@ -133,24 +177,18 @@ else if(player == 2){
 }
 
 /*void * erase_game(GAME * game){
-
   for(int i =0;i<game->size;i++){
     CELL* map1Pos=game->map1[i];
     CELL* map2Pos = game->map2[i];
     free(map1Pos);
     free(map2Pos);
   }
-
-
 //free(game->map1);
 //free(game->map2);
-
   free(game);
-
   game = NULL;
   game->map1 = NULL;
   game->map2 = NULL;
-
   assert(game == NULL);
   assert(game->map2 == NULL);
 }*/
