@@ -11,17 +11,14 @@
 #define MISSED_SHOT '3'
 
 //flags for CELL maps
-#define NO_SHOT '0'
-#define NO_HIT '1'
-#define HIT_CELL '2'
-
-#define BOAT 'O'
+#define _NO_SHOT 0
+#define _NO_HIT 1
+#define _HIT_CELL 2
 
 
 typedef struct{
-  char state;
   SHIP *ship;
-  //int shot;
+  int shot;
 } CELL;
 
 
@@ -40,19 +37,19 @@ typedef struct{
 
 
 GAME * init_board(int size){
-    GAME *pGame = (GAME*)malloc(sizeof(GAME));
+    GAME * pGame = (GAME*)malloc(sizeof(GAME));
 
     pGame->size = size;
     pGame->map1 = (CELL**)malloc(size*sizeof(CELL));
     pGame->map2 = (CELL**)malloc(size*sizeof(CELL));
 
     for(int i=0;i<size;i++){
-        pGame->map1[i]=(CELL*)malloc(size*sizeof(CELL));
-        pGame->map2[i]=(CELL*)malloc(size*sizeof(CELL));
+        pGame->map1[i] = (CELL*)malloc(size*sizeof(CELL));
+        pGame->map2[i] = (CELL*)malloc(size*sizeof(CELL));
 
         for(int j=0;j<size;j++){
-          pGame->map1[i][j].state=EMPTY;
-          pGame->map2[i][j].state=EMPTY;
+          pGame->map1[i][j].shot= _NO_SHOT;
+          pGame->map2[i][j].shot= _NO_SHOT;
         }
       }
   return pGame;
@@ -61,105 +58,82 @@ GAME * init_board(int size){
 void rotation (SHIP *ship){
     for(int i=0;i<5;i++){
         for(int j=0;j<5;j++){
-            if(ship->bitmap[i][j]==NOT_HIT){
-                ship->bitmap[i][j]=EMPTY;
-                ship->bitmap[j][4-i]=NOT_HIT;
+            if(ship->bitmap[i][j] == NOT_HIT){
+                ship->bitmap[i][j] = EMPTY;
+                ship->bitmap[j][5-i] = NOT_HIT;
             }
         }
     }
  }
 
-SHIP *create_ship(int orient,int size){
+SHIP *create_ship(int x,int y,int orient,int size){
 
- SHIP *newship = (SHIP*)malloc(sizeo(f(SHIP));
-    switch(size){
-        case 2:
-        newship=Destroyer;
-        break;
-
-        case 3:
-        newship=Cruiser;
-        break;
-
-        case 4:
-        newship=Battleship;
-        break;
-
-        case 5: 
-        newship=Carrier;
-        break;
-        
-        case 9:
-        newship=Pickaxe;
-        break;
-
-        default:
-         printf("That size is unavaliable.");
-         break;
-    }
-
+ SHIP *newship = (SHIP*)malloc(sizeof(SHIP));
+ newship->size = size;
  for(int i=0;i<orient;i++) rotation(newship);
- 
  return newship;
 }
 
+void insert_ship(int x,int y,SHIP *ship,CELL **map){
+  int clear=0; // serve para verificar se todas as posições em que queremos inserir estão desocupadas
+  ship->x=x;
+  ship->y=y;
 
+  for(int i=0;i<5;i++)
+    for(int j=0;j<5;i++)
+      if(ship->bitmap[i][j] == NOT_HIT && map[x+i-2][y+j-2].shot == _NO_SHOT) clear++;
 
-void attack(int x,int y, CELL **map){
-  int bitmap_x=2+(x-map[y][x].ship->x);
-  int bitmap_y=2+(y-map[y][x].ship->y);
-  if(map[y][x].ship->bitmap[bitmap_y][bitmap_x]==EMPTY){
+  if(clear>=ship->size){
+    for(int i=0;i<5;i++){
+      for(int j=0;j<5;i++){
+        if(ship->bitmap[i][j] == NOT_HIT ){
+          map[x+i-2][y+j-2].ship = ship;
+          map[x+i-2][y+j-2].shot = _NO_HIT;
+        }
+      }
+    }
+  }
+  else
+  printf("You can't insert your ship here");
+}
+
+/*void attack(int x,int y, CELL **map){
+  int bitmap_x = 2+(x-map[y][x].ship->x);
+  int bitmap_y = 2+(y-map[y][x].ship->y);
+  if(map[y][x].ship->bitmap[bitmap_y][bitmap_x] == EMPTY){
     //atualiza o bitmap
-    map[y][x].ship->bitmap[bitmap_y][bitmap_x]=MISSED_SHOT;
+    map[y][x].ship->bitmap[bitmap_y][bitmap_x] = MISSED_SHOT;
     //atualiza CELL
-    map[y][x].state=NO_HIT;
+    map[y][x].shot = _NO_HIT;
     mvprintw(0,20,"MISS");
     return;
    }
-  else if(map[y][x].ship->bitmap[bitmap_y][bitmap_x]==NOT_HIT){
+  else if(map[y][x].ship->bitmap[bitmap_y][bitmap_x] == NOT_HIT){
       //update value in bitmap
-      map[y][x].ship->bitmap[bitmap_y][bitmap_x]=HIT;
+      map[y][x].ship->bitmap[bitmap_y][bitmap_x] = HIT;
       //update value in CELL map
-      map[y][x].state=HIT_CELL;
-      map[y][x].ship->size-=1;
+      map[y][x].shot = _HIT_CELL;
+      map[y][x].ship->size -= 1;
       mvprintw(0,20,"HIT");
     }
+}*/
+/*void insert_ship(int player,SHIP *ship,BOARD * game){
+if (player == 1){
+    game->map1[x][y]=ship;
 }
-void insert_ship(int x,int y,SHIP *ship,CELL **map){
-    int clear=0; // serve para verificar se todas as posições em que queremos inserir estão desocupadas
-    ship.x=x;
-    ship.y=y;
-    
-for(int i=0;i<5;i++){
-    for(int j=0;j<5;i++){
-        if(ship->bitmap[i][j]==NOT_HIT && map[x+i-2][y+j-2].state==NO_SHOT) clear++;
-        }
-    }
-if(clear>=ship.size){
-for(int i=0;i<5;i++){
-    for(int j=0;j<5;i++){
-        if(ship->bitmap[i][j]==NOT_HIT ){
-            map[x+i-2][y+j-2].ship=ship;
-            map[x+i-2][y+j-2].state=NO_HIT;
-
-            
-            }
-        }
-    }
-    
-    }
-
-    else
-        printf("You can't insert your ship here");
-    
+else
+{
+    game->map2[x][y]=ship;
 }
+}
+*/
 
-void print_game(int player,GAME * b){
+/*void print_game(int player,GAME * b){
 
     if(player == 1){
       for(int i=0;i<b->size;i++){
           for(int j=0;j<b->size;j++){
-              printf("%c ",b->map1[i][j].state);
+              printf("%d ",b->map1[i][j].shot);
             }
             printf("\n");
           }
@@ -167,28 +141,34 @@ void print_game(int player,GAME * b){
 else if(player == 2){
     for(int i=0;i<b->size;i++){
         for(int j=0;j<b->size;j++){
-            printf("%c ",b->map2[i][j].state);
+            printf("%d ",b->map2[i][j].shot);
         }
         printf("\n");
     }
   }
 
   else printf("Player does not exist");
-}
+}*/
 
 /*void * erase_game(GAME * game){
+
   for(int i =0;i<game->size;i++){
     CELL* map1Pos=game->map1[i];
     CELL* map2Pos = game->map2[i];
     free(map1Pos);
     free(map2Pos);
   }
+
+
 //free(game->map1);
 //free(game->map2);
+
   free(game);
+
   game = NULL;
   game->map1 = NULL;
   game->map2 = NULL;
+
   assert(game == NULL);
   assert(game->map2 == NULL);
 }*/
@@ -213,19 +193,33 @@ return map;
 */
 
 int main(){
-	int n;
-
+  int n;
 
 	printf("Selecione o tamanho do mapa\n");
 	scanf("%d",&n);
-
 	system("clear");
 
-GAME *gameboard=init_board(n);
-//SHIP *s =create_ship(start,3);
+//GAME *gameboard=init_board(n);
+//SHIP *boat1 = Pickaxe;
+SHIP* boat2 = Carrier;
+//SHIP *boat3 = Battleship;
+//SHIP *boat4 = Submarine;
+//SHIP *boat5 = Cruiser;
+//SHIP *boat6 = Destroyer;
+
+/*(SHIP*) malloc(sizeof(SHIP));
+s->bitmap=&Pickaxe->bitmap;
+s->size=&Pickaxe->size;*/
+rotation(boat2);
+for(int i=0;i<5;i++){
+   for(int j=0;j<5;j++){
+       printf("%c ",boat2->bitmap[i][j]);
+    }
+    printf("\n");
+}
 //insert_ship(1,2,3,'x',gameboard);
 //insert_ship(2,3,4,'*',gameboard);
-print_game(1,gameboard);
+///print_game(1,gameboard);
 
 printf("\n");
 
