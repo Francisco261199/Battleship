@@ -87,7 +87,6 @@ void attack(int x,int y, CELL **map){
     map[y][x].ship->bitmap[bitmap_y][bitmap_x]=MISSED_SHOT;
     //atualiza CELL
     map[y][x].state=NO_HIT;
-    map[y][x].ship->size-=1;	  
     mvprintw(0,20,"MISS");
     return;
    }
@@ -96,6 +95,7 @@ void attack(int x,int y, CELL **map){
       map[y][x].ship->bitmap[bitmap_y][bitmap_x]=HIT;
       //update value in CELL map
       map[y][x].state=HIT_CELL;
+      map[y][x].ship->size-=1;
       mvprintw(0,20,"HIT");
     }
 }
