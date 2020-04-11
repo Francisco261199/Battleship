@@ -127,13 +127,15 @@ void insert_ship(int x,int y,SHIP *ship,CELL **map){
   ship->x=x;
   ship->y=y;
 
-  for(int i=0;i<5;i++)
-    for(int j=0;j<5;i++)
-      if(ship->bitmap[i][j] == NOT_HIT && map[x+i-2][y+j-2].shot == _NO_SHOT) clear++;
+
+  for(int i=0;i<5;i++){
+    for(int j=0;j<5;j++){
+      if((ship->bitmap[i][j] == NOT_HIT) && (map[x+i-2][y+j-2].shot == _NO_SHOT)) clear++;
+    }}
 
   if(clear>=ship->size){
     for(int i=0;i<5;i++){
-      for(int j=0;j<5;i++){
+      for(int j=0;j<5;j++){
         if(ship->bitmap[i][j] == NOT_HIT ){
           map[x+i-2][y+j-2].ship = ship;
           map[x+i-2][y+j-2].shot = _NO_HIT;
@@ -142,7 +144,7 @@ void insert_ship(int x,int y,SHIP *ship,CELL **map){
     }
   }
   else
-  printf("You can't insert your ship here");
+  printf("You can't insert your ship here\n");
 }
 
 /*void attack(int x,int y, CELL **map){
@@ -176,7 +178,7 @@ else
 }
 */
 
-/*void print_game(int player,GAME * b){
+void print_game(int player,GAME * b){
 
     if(player == 1){
       for(int i=0;i<b->size;i++){
@@ -196,7 +198,7 @@ else if(player == 2){
   }
 
   else printf("Player does not exist");
-}*/
+}
 
 /*void * erase_game(GAME * game){
 
