@@ -55,16 +55,27 @@ GAME * init_board(int size){
   return pGame;
 }
 
-void rotation (SHIP *ship){
-    for(int i=0;i<5;i++){
-        for(int j=0;j<5;j++){
-            if(ship->bitmap[i][j] == NOT_HIT){
-                ship->bitmap[i][j] = EMPTY;
-                ship->bitmap[j][5-i] = NOT_HIT;
-            }
-        }
+void rotation_90(SHIP *ship){
+  //rotatçao por camadas externas do cubo
+  //11111////////////////////
+  //   i=0      i=1    i=2 //
+  //  11111                //
+  //  1...1     222        //
+  //  1...1 --> 2.2 --> 3  //
+  //  1...1     222        //
+  //  11111                //
+  //                       //
+  ///////////////////////////
+  for(int i=0;i<5/2;i++){
+    for(int j=i;j<5-i-1;j++){
+      int temp=ship->bitmap[i][j];
+      ship->bitmap[i][j] = ship->bitmap[5-1-j][i];
+      ship->bitmap[5-1-j][i] = ship->bitmap[5-1-i][5-1-j];
+      ship->bitmap[5-1-i][5-1-j] = ship->bitmap[j][5-1-i];
+      ship->bitmap[j][5-1-i]=temp;
+      }
     }
- }
+  }
 
 SHIP *create_ship(int x,int y,int orient,int size){
 
@@ -191,6 +202,15 @@ S
 return map;
 	}
 */
+void print_boat(SHIP* ship){
+  for(int i=0;i<5;i++){
+     for(int j=0;j<5;j++){
+         printf("%c ",ship->bitmap[i][j]);
+      }
+      printf("\n");
+  }
+  printf("\n");
+}
 
 int main(){
   int n;
@@ -200,23 +220,30 @@ int main(){
 	system("clear");
 
 //GAME *gameboard=init_board(n);
-//SHIP *boat1 = Pickaxe;
+SHIP *boat1 = Pickaxe;
 SHIP* boat2 = Carrier;
-//SHIP *boat3 = Battleship;
-//SHIP *boat4 = Submarine;
-//SHIP *boat5 = Cruiser;
-//SHIP *boat6 = Destroyer;
+SHIP *boat3 = Battleship;
+SHIP *boat4 = Submarine;
+SHIP *boat5 = Cruiser;
+SHIP *boat6 = Destroyer;
 
 /*(SHIP*) malloc(sizeof(SHIP));
 s->bitmap=&Pickaxe->bitmap;
 s->size=&Pickaxe->size;*/
-rotation(boat2);
-for(int i=0;i<5;i++){
-   for(int j=0;j<5;j++){
-       printf("%c ",boat2->bitmap[i][j]);
-    }
-    printf("\n");
-}
+rotation_90(boat1);
+rotation_90(boat2);
+rotation_90(boat3);
+rotation_90(boat4);
+rotation_90(boat5);
+rotation_90(boat6);
+
+
+print_boat(boat1);
+print_boat(boat2);
+print_boat(boat3);
+print_boat(boat4);
+print_boat(boat5);
+print_boat(boat6);
 //insert_ship(1,2,3,'x',gameboard);
 //insert_ship(2,3,4,'*',gameboard);
 ///print_game(1,gameboard);
