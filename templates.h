@@ -10,6 +10,6 @@ typedef struct{
 extern const SHIP* const Pickaxe;
 extern const SHIP* const Carrier;
 extern const SHIP* const Battleship;
-extern const SHIP* const Submarine;
+extern const SHIP* const Sigma;
 extern const SHIP* const Cruiser;
 extern const SHIP* const Destroyer;
