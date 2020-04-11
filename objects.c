@@ -56,32 +56,69 @@ GAME * init_board(int size){
 }
 
 void rotation_90(SHIP *ship){
-  //rotatçao por camadas externas do cubo
-  //11111////////////////////
-  //   i=0      i=1    i=2 //
-  //  11111                //
-  //  1...1     222        //
-  //  1...1 --> 2.2 --> 3  //
-  //  1...1     222        //
-  //  11111                //
-  //                       //
-  ///////////////////////////
-  for(int i=0;i<5/2;i++){
-    for(int j=i;j<5-i-1;j++){
-      int temp=ship->bitmap[i][j];
-      ship->bitmap[i][j] = ship->bitmap[5-1-j][i];
-      ship->bitmap[5-1-j][i] = ship->bitmap[5-1-i][5-1-j];
-      ship->bitmap[5-1-i][5-1-j] = ship->bitmap[j][5-1-i];
-      ship->bitmap[j][5-1-i]=temp;
-      }
+//rotatçao por camadas externas do cubo
+////////////////////////////
+//   i=0      i=1    i=2 //
+//  11111                //
+//  1...1     222        //
+//  1...1 --> 2.2 --> 3  //
+//  1...1     222        //
+//  11111                //
+//                       //
+///////////////////////////
+for(int i=0;i<5/2;i++){
+  for(int j=i;j<5-i-1;j++){
+    int temp = ship->bitmap[i][j];
+    ship->bitmap[i][j] = ship->bitmap[5-1-j][i];
+    ship->bitmap[5-1-j][i] = ship->bitmap[5-1-i][5-1-j];
+    ship->bitmap[5-1-i][5-1-j] = ship->bitmap[j][5-1-i];
+    ship->bitmap[j][5-1-i] = temp;
     }
   }
+}
+void rotation_180(SHIP* ship){
+  for(int i=0;i<5/2;i++){
+    for(int j=0;j<3;j++){
+      int temp1 = ship->bitmap[i][j];
+      int temp2 = ship->bitmap[i][5-1-j];
+      ship->bitmap[i][j] = ship->bitmap[5-i-1][j];
+      ship->bitmap[i][5-1-j] = ship->bitmap[5-i-1][5-1-j];
+      ship->bitmap[5-i-1][j]=temp1;
+      ship->bitmap[5-i-1][5-1-j]=temp2;
+    }
+  }
+}
 
-SHIP *create_ship(int x,int y,int orient,int size){
+void rotation_270(SHIP* ship){
+  for(int i=0;i<5/2;i++){
+    for(int j=i;j<5-i-1;j++){
+      int temp = ship->bitmap[i][j];
+      ship->bitmap[i][j] = ship->bitmap[j][5-1-i];
+      ship->bitmap[j][5-1-i] = ship->bitmap[5-1-i][5-1-j];
+      ship->bitmap[5-1-i][5-1-j] = ship->bitmap[5-1-j][i];
+      ship->bitmap[5-1-j][i] = temp;
+    }
+  }
+}
 
- SHIP *newship = (SHIP*)malloc(sizeof(SHIP));
- newship->size = size;
- for(int i=0;i<orient;i++) rotation(newship);
+SHIP* create_ship(int orient,int size){
+  SHIP *newship = (SHIP*)malloc(sizeof(SHIP));
+  switch(size){
+    case 2: newship = Destroyer;break;
+    case 3: newship = Cruiser;break;
+    case 4: newship = Battleship;break;
+    case 5: newship = Carrier;break;
+    case 7: newship = Sigma;break;
+    case 9: newship = Pickaxe;break;
+    default : printf("Error. Boat not found!\n"),exit(1);
+  }
+
+  switch(orient){
+   case 1: rotation_90(newship);break;
+   case 2: rotation_180(newship);break;
+   case 3: rotation_270(newship);break;
+   default : printf("Error. Rotation not possible!\n");exit(1);
+ }
  return newship;
 }
 
@@ -214,39 +251,25 @@ void print_boat(SHIP* ship){
 
 int main(){
   int n;
-
-	printf("Selecione o tamanho do mapa\n");
+  printf("Selecione o tamanho do mapa\n");
 	scanf("%d",&n);
 	system("clear");
 
-//GAME *gameboard=init_board(n);
-SHIP *boat1 = Pickaxe;
-SHIP* boat2 = Carrier;
-SHIP *boat3 = Battleship;
-SHIP *boat4 = Submarine;
-SHIP *boat5 = Cruiser;
-SHIP *boat6 = Destroyer;
+//GAME* gameboard = init_board(n);
 
-/*(SHIP*) malloc(sizeof(SHIP));
-s->bitmap=&Pickaxe->bitmap;
-s->size=&Pickaxe->size;*/
-rotation_90(boat1);
-rotation_90(boat2);
-rotation_90(boat3);
-rotation_90(boat4);
-rotation_90(boat5);
-rotation_90(boat6);
+SHIP* boat1 = create_ship(1,7);
+//SHIP* boat2 = Carrier;
+//SHIP* boat3 = Battleship;
+//SHIP* boat4 = Sigma;
+//SHIP* boat5 = Cruiser;
+//SHIP* boat6 = Destroyer;
 
-
+//rotation_270(boat1);
 print_boat(boat1);
-print_boat(boat2);
-print_boat(boat3);
-print_boat(boat4);
-print_boat(boat5);
-print_boat(boat6);
+
 //insert_ship(1,2,3,'x',gameboard);
 //insert_ship(2,3,4,'*',gameboard);
-///print_game(1,gameboard);
+//print_game(1,gameboard);
 
 printf("\n");
 
