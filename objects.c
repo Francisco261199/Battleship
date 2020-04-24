@@ -8,18 +8,22 @@
 #define EMPTY '0'
 #define NOT_HIT '1'
 #define HIT '2'
-#define MISSED_SHOT '3'
 
 //flags for CELL maps
 #define _NO_SHOT 0
 #define _NO_HIT 1
 #define _HIT_CELL 2
+#define _MISSED_SHOT 3
 
+#define NORTH 0
+#define SOUTH 1
+#define WEST  2
+#define EAST  3
 
 typedef struct{
   SHIP *ship;
   int shot;
-  int shot_count;
+  //int shot_count;
 } CELL;
 
 
@@ -102,41 +106,49 @@ void rotation_270(SHIP* ship){
   }
 }
 
-SHIP* create_ship(int orient,int size){
-  SHIP *newship = (SHIP*)malloc(sizeof(SHIP));
+void create_ship(SHIP* newship,int orient,int size){
+  //SHIP *newship = (SHIP*)malloc(sizeof(SHIP));
   switch(size){
-    case 2: newship = Destroyer;break;
-    case 3: newship = Cruiser;break;
-    case 4: newship = Battleship;break;
-    case 5: newship = Carrier;break;
-    case 7: newship = Sigma;break;
-    case 9: newship = Pickaxe;break;
+    case 2: *newship = *Destroyer;break;
+    case 3: *newship = *Cruiser;break;
+    case 4: *newship = *Battleship;break;
+    case 5: *newship = *Carrier;break;
+    case 7: *newship = *Sigma;break;
+    case 9: *newship = *Pickaxe;break;
     default : printf("Error. Boat not found!\n"),exit(1);
   }
 
   switch(orient){
+   case 0: break;
    case 1: rotation_90(newship);break;
    case 2: rotation_180(newship);break;
    case 3: rotation_270(newship);break;
    default : printf("Error. Rotation not possible!\n");exit(1);
  }
- return newship;
+ //return newship;
 }
 
-void insert_ship(int x,int y,SHIP* ship,CELL** map, int size){
-  if(x>size || y>size){
+int insert_ship(int x,int y,SHIP* ship,CELL** map, int size,int flag){
+  if(x>(size-1) || y>(size-1)){
     printf("Boat out of bounds!\n");
-    return;
+    return 0;
   }
   int clear=0; // serve para verificar se todas as posições em que queremos inserir estão desocupadas
   ship->x=x;
   ship->y=y;
 
-  for(int i=0;i<5;i++)
-    for(int j=0;j<5;j++)
-      if(ship->bitmap[i][j] == NOT_HIT && map[x+i-2][y+j-2].shot == _NO_SHOT) clear++;
+  //fazer a verificação para inserção normal
+  if(flag == 1){
+    for(int i=0;i<5;i++){
+      for(int j=0;j<5;j++){
+        if(ship->bitmap[i][j] == NOT_HIT && map[x+i-2][y+j-2].shot == _NO_SHOT) clear++;
+      }
+    }
+  }
+  //não é necessário fazer a verificação
+  else clear = ship->size;
 
-  if(clear>=ship->size){
+  if(clear == ship->size){
     for(int i=0;i<5;i++){
       for(int j=0;j<5;j++){
         if(ship->bitmap[i][j] == NOT_HIT ){
@@ -145,29 +157,79 @@ void insert_ship(int x,int y,SHIP* ship,CELL** map, int size){
         }
       }
     }
+    return 1;
   }
-  else printf("ERROR! You can't insert boat here!\n");
+  else{
+    printf("ERROR! You can't insert boat here!\n");
+    printf("Please insert in another position.\n");
+    printf("X: "); scanf("%d",&x);
+    printf("Y: "); scanf("%d",&y); printf("\n");
+    insert_ship(x,y,ship,map,size,1);
+  }
+  return 0;
 }
 
-void attack(int x,int y, CELL **map){
-  if(!map[x][y].ship && map[x][y].shot == _NO_SHOT){
-    printf("Miss!No Bout!\n");
-    //update CELL
-    map[x][y].shot += _NO_HIT;
-    return;
+void attack(int x,int y, CELL **map,int size){
+  //permitir ao jogador selecionar nova posição
+  //no caso de este ter inserido posição fora do board
+  if(x>(size-1) || y>(size-1)){
+    printf("check1\n");
+    do{
+      printf("Out of bounds. Insert new position:\n");
+      printf("X: ");scanf("%d",&x);
+      printf("Y: ");scanf("%d",&y);printf("\n");
+    }while(x>(size-1) || y>(size-1));
   }
 
-  int bitmap_x = 2+(x-map[x][y].ship->x);
-  int bitmap_y = 2+(y-map[x][y].ship->y);
-  if(map[x][y].ship->bitmap[bitmap_x][bitmap_y] == NOT_HIT){
+
+  //calculamos as coordenadas no bitmap somando à coordenada central
+  //o valor da diferença entre a coordenada que queremos atacar e a
+  // coordenada central do barco no mapa do jogo
+
+  if(map[x][y].ship != NULL){
+    //conversion to bitmap coordinates(map(x,y)->bitmap(x,y))
+    int bitmap_x = 2+(x-map[x][y].ship->x);
+    int bitmap_y = 2+(y-map[x][y].ship->y);
+
+    //boat piece not hit
+    if(map[x][y].ship->bitmap[bitmap_x][bitmap_y] == NOT_HIT){
       //update bitmap
       map[x][y].ship->bitmap[bitmap_x][bitmap_y] = HIT;
       //update CELL
       map[x][y].shot = _HIT_CELL;
       map[x][y].ship->size -= 1;
       printf("Hit!\n");
+      return;
     }
-  else if(map[x][y].shot == _HIT_CELL) printf("Already hit!\n");
+    //boat piece hit
+    if(map[x][y].ship->bitmap[bitmap_x][bitmap_y] == HIT){
+      printf("Already hit(with boat)! Please try again\n");
+      //get new coodinates
+      printf("X: ");scanf("%d",&x);
+      printf("Y: ");scanf("%d",&y);printf("\n");
+      attack(x,y,map,size);
+      return;
+    }
+  }
+  //already hit position and no boat
+  else{
+    //water and non-attacked
+    if(map[x][y].ship == NULL && map[x][y].shot == _NO_SHOT){
+      printf("Miss!No Boat!\n");
+      //update CELL
+      map[x][y].shot += _MISSED_SHOT;
+      return;
+    }
+    //water and attacked
+    if(map[x][y].shot == _MISSED_SHOT){
+      printf("Already hit(without boat)! Please try again\n");
+      //get new coodinates
+      printf("X: ");scanf("%d",&x);
+      printf("Y: ");scanf("%d",&y);printf("\n");
+      attack(x,y,map,size);
+      return;
+    }
+  }
 }
 
 
@@ -244,6 +306,8 @@ void print_boat(SHIP* ship){
   printf("\n");
 }
 
+
+
 int main(){
 int n;
 printf("Selecione o tamanho do mapa\n");
@@ -251,15 +315,37 @@ scanf("%d",&n);
 system("clear");
 
 GAME* gameboard = init_board(n);
-SHIP* boat1 = create_ship(1,7);
-print_boat(boat1);
-insert_ship(12,15,boat1,gameboard->map1,gameboard->size);
+//SHIP* boat1 = create_ship(1,7);
+SHIP* boat2 = (SHIP*) malloc(sizeof(SHIP));
+SHIP* boat3 = (SHIP*) malloc(sizeof(SHIP));
+create_ship(boat2,1,2);
+create_ship(boat3,0,2);
+
+print_boat(boat2);
+print_boat(boat3);
+printf("2:%x\n",boat2);
+printf("3:%x\n",boat3);
+
+
+
+//insert_ship(12,15,boat1,gameboard->map1,gameboard->size,1);
+(void)insert_ship(9,3,boat2,gameboard->map1,gameboard->size,1);
+(void)insert_ship(10,13,boat3,gameboard->map1,gameboard->size,1);
 print_game(1,gameboard);
-attack(12,15,gameboard->map1);
+
+attack(10,3,gameboard->map1,gameboard->size);
+printf("...\n");
 print_game(1,gameboard);
-print_boat(boat1);
-attack(13,21,gameboard->map1);
+
+attack(10,4,gameboard->map1,gameboard->size);
+printf("...\n");
 print_game(1,gameboard);
+
+attack(10,4,gameboard->map1,gameboard->size);
+print_game(1,gameboard);
+//print_boat(boat2);
+//attack(13,21,gameboard->map1);
+//print_game(1,gameboard);
 
 printf("\n");
 
