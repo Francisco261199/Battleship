@@ -29,12 +29,20 @@ GAME * init_board(int size){
 
 // inserção do navio no tabuleiro 
 int verify_insert(int x, int y, SHIP* ship, CELL**map, int map_size){
+
   if(x>(map_size-1) || y>(map_size-1)) return 1;
 
   int clear = 0;
   for(int i=0;i<5;i++){
     for(int j=0;j<5;j++){
-      if(ship->bitmap[i][j] == NOT_HIT && map[x+i-2][y+j-2].shot == _NO_SHOT) clear++;
+      int flag = 1;
+
+      //able to place boats in extremity of map even if bitmap doesnt fit
+      if( ((x+i-2) >= map_size || (y+j-2) >= map_size || (x+i-2) < 0 || (y+j-2) < 0 ) && ship->bitmap[i][j] == EMPTY) flag=0;
+      //out of bounds
+      else if( ((x+i-2) >= map_size || (y+j-2) >= map_size || (x+i-2) < 0 || (y+j-2) < 0 ) && ship->bitmap[i][j] != EMPTY) return 1;
+      //insert is possible for given position
+      if(flag == 1 && ship->bitmap[i][j] == NOT_HIT && map[x+i-2][y+j-2].shot == _NO_SHOT) clear++;
     }
   }
   return clear;
@@ -70,25 +78,27 @@ int generate_number(int a,int b){
   return (a == 0)? rand()% ++b:rand() % ++b + a;
 }
 
-/*void rand_insert_ship(int map_size,CELL** map,int nships, SHIP** boat){
+void rand_insert_ships(int map_size,CELL** map,int nships){
   int boat_types[]={2,3,4,5,7,9};
   for(int i=0;i<nships;i++){
     int x=0;
     int y=0;
+    SHIP newship;
+    int boat;
     while(TRUE){
       int rotation = generate_number(0,3);
       x = generate_number(0,(map_size-1));
       y = generate_number(0,(map_size-1));
-      int boat = generate_number(0,5);
-      create_ship(*boat[i],rotation,boat_types[boat]);
-      if(verify_insert(x,y,*boat[i],map,map_size) != *boat[i]->size) continue;
+      boat = generate_number(0,5);
+      printf("x:%d, y:%d, boat = %d, rotation = %d \n",x,y,boat_types[boat],rotation);
+      create_ship(&newship,rotation,boat_types[boat]);
+      if(verify_insert(x,y,&newship,map,map_size) != newship.size) continue;
       else break;
     }
-    insert_ship(x,y,boat[i],map,map_size);
+    insert_ship(x,y,&newship,map,map_size);
+    printf("Inseriu: x = %d, y = %d\n",x,y);
   }
 }
-
-*/
 
 //atacar navio
 void attack(int x,int y, CELL **map,int size){
