@@ -52,5 +52,5 @@ void attack(int x,int y, CELL **map,int size);
 
 void print_game(int player,GAME * b);
 
-
+void print_secret_board(int map, GAME * b);
 #endif
