@@ -176,3 +176,35 @@ void print_game(int player,GAME * b){
   else printf("Player does not exist");
   printf("\n");
 }
+
+void print_secret_board(int player,GAME * b){
+if(player == 1){
+    for(int i=0;i<b->size;i++){
+      for(int j=0;j<b->size;j++){
+          if(b->map1[i][j].shot == _NO_HIT){
+              printf("%c ",_NO_SHOT);
+              
+          }
+          else
+          printf("%c ",b->map1[i][j].shot);
+      }
+      printf("\n");
+    }
+  }
+  else if(player == 2){
+    for(int i=0;i<b->size;i++){
+      for(int j=0;j<b->size;j++){
+          if(b->map2[i][j].shot == _NO_HIT){
+          printf("%c ",_NO_SHOT);
+      }
+
+      else
+        printf("%c ",b->map2[i][j].shot);
+      }
+      printf("\n");
+    }
+  }
+  else printf("Player does not exist");
+  printf("\n");
+}
+
