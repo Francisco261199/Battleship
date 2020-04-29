@@ -49,9 +49,12 @@ void insert_ship(int x,int y,SHIP* ship,CELL** map, int map_size);
 
 void rand_insert_ship(int map_size,CELL** map,int nships);
 
-void attack(int x,int y, CELL **map,int size);
+void attack(int x,int y, CELL **map,int size,int state);
 
 void print_game(int player,GAME * b);
 
 void print_secret_board(int map, GAME * b);
+
+GAME* erase_game(GAME* board);
+
 #endif
