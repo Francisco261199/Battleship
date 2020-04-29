@@ -68,6 +68,36 @@ void menu_select(){
   //stop ncurses screen
   endwin();
 }
+
+void prints_ships(){
+initscr();
+
+start_color();
+init_pair(1,COLOR_CYAN,COLOR_BLACK);
+attron(COLOR_PAIR(1));
+
+    mvprintw(0,18,"Select Ships:");
+    mvprintw(2,0,"2-Destroyer");   mvprintw(2,20,"3-Cruiser");       mvprintw(2,40,"4-Battleship");
+  
+    mvprintw(4,0,"0 0 0 0 0");     mvprintw(4,20,"0 0 0 0 0");       mvprintw(4,40,"0 0 1 0 0");     
+    mvprintw(5,0,"0 0 1 0 0");     mvprintw(5,20,"0 0 1 0 0");       mvprintw(5,40,"0 0 1 0 0");     
+    mvprintw(6,0,"0 0 X 0 0");     mvprintw(6,20,"0 0 X 0 0");       mvprintw(6,40,"0 0 X 0 0");     
+    mvprintw(7,0,"0 0 0 0 0");     mvprintw(7,20,"0 0 1 0 0");       mvprintw(7,40,"0 0 1 0 0");     
+    mvprintw(8,0,"0 0 0 0 0");     mvprintw(8,20,"0 0 0 0 0");       mvprintw(8,40,"0 0 0 0 0");     
+   
+  
+    mvprintw(10,0,"5-Carrier");    mvprintw(10,20,"7-Sigma");        mvprintw(10,40,"9-Pickaxe");
+   
+    mvprintw(12,0,"0 0 1 0 0");    mvprintw(12,20,"0 0 1 1 0");      mvprintw(12,40,"0 1 1 1 0");   
+    mvprintw(13,0,"0 0 1 0 0");    mvprintw(13,20,"0 0 1 0 0");      mvprintw(13,40,"1 0 1 0 1");   
+    mvprintw(14,0,"0 0 X 0 0");    mvprintw(14,20,"0 0 X 0 0");      mvprintw(14,40,"0 0 X 0 0");   
+    mvprintw(15,0,"0 0 1 0 0");    mvprintw(15,20,"0 0 1 0 0");      mvprintw(15,40,"0 0 1 0 0");   
+    mvprintw(16,0,"0 0 1 0 0");    mvprintw(16,20,"0 1 1 0 0");      mvprintw(16,40,"0 0 1 0 0");    
+    
+  
+    getch();
+    endwin();
+}
 int main(){
   menu_select();
   return 0;
