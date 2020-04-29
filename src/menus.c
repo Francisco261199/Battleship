@@ -32,7 +32,7 @@ int Credits(){
   //noecho();
   mvprintw(0,0,"                                            Made By:\n");
   mvprintw(1,0,"                         ##################################################\n");
-  mvprintw(2,0,"                         #                Amadeus Marques                 #\n");
+  mvprintw(2,0,"                         #                Amadeu Marques                 #\n");
   mvprintw(3,0,"                         ##                     &&                       ##\n");
   mvprintw(4,0,"                         #               Francisco Ribeiro                #\n");
   mvprintw(5,0,"                         ##################################################\n");
