@@ -94,6 +94,13 @@ attron(COLOR_PAIR(1));
     mvprintw(15,0,"0 0 1 0 0");    mvprintw(15,20,"0 0 1 0 0");      mvprintw(15,40,"0 0 1 0 0");   
     mvprintw(16,0,"0 0 1 0 0");    mvprintw(16,20,"0 1 1 0 0");      mvprintw(16,40,"0 0 1 0 0");    
     
+
+
+    mvprintw(18,0,"Rotation:");
+    mvprintw(20,0,"0-None");     mvprintw(20,10,"1-Left");
+    mvprintw(22,0,"2-Reverse"); mvprintw(22,10,"3-Right");
+
+    mvprintw(24,0,"Please insert the ship size and orientation:");
   
     getch();
     endwin();
