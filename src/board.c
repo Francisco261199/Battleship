@@ -101,7 +101,7 @@ void rand_insert_ships(int map_size,CELL** map,int nships){
 }
 
 //atacar navio
-void attack(int x,int y, CELL **map,int size){
+void attack(int x,int y, CELL **map,int size,int state){
   //permitir ao jogador selecionar nova posição
   //no caso de este ter inserido posição fora do board
   if(x>(size-1) || y>(size-1)){
@@ -131,6 +131,12 @@ void attack(int x,int y, CELL **map,int size){
       map[x][y].shot = _HIT_CELL;
       map[x][y].ship->size -= 1;
       printf("Hit!\n");
+      if(map[x][y].ship->size == 0){
+        printf("Ship Destroyed!");
+        state-=1;
+      }
+      free(map[x][y].ship);
+     map[x][y].ship=NULL; 
       return;
     }
     //boat piece hit
@@ -139,7 +145,7 @@ void attack(int x,int y, CELL **map,int size){
       //get new coodinates
       printf("X: ");scanf("%d",&x);
       printf("Y: ");scanf("%d",&y);printf("\n");
-      attack(x,y,map,size);
+      attack(x,y,map,size,state);
       return;
     }
   }
@@ -158,7 +164,7 @@ void attack(int x,int y, CELL **map,int size){
       //get new coodinates
       printf("X: ");scanf("%d",&x);
       printf("Y: ");scanf("%d",&y);printf("\n");
-      attack(x,y,map,size);
+      attack(x,y,map,size,state);
       return;
     }
   }
@@ -218,3 +224,24 @@ if(player == 1){
   printf("\n");
 }
 
+
+GAME* erase_game(GAME* board){
+
+
+for(int i=0;i<board->size;i++){
+  free(board->map1[i]);
+  free(board->map2[i]);
+  board->map1[i]=NULL;
+  board->map2[i]=NULL;
+}
+
+free(board->map1);
+free(board->map2);
+
+board->map1=NULL;
+board->map2=NULL;
+
+free(board);
+
+return NULL;
+}
