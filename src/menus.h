@@ -23,10 +23,10 @@
 
 
 //variables
-extern int n_boats,map_size,rand_flag;
-extern int n_for_each_boat[6];
+int n_boats,map_size,rand_flag;
+int n_for_each_boat[6];
 
 //functions
-void menu_select();
+int menu_select();
 
 #endif
