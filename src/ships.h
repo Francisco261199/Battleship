@@ -13,7 +13,7 @@
 #define WEST  2
 #define EAST  3
 
-//estrutura do navio
+//ship structure
 
 typedef struct{
     //center coordinates of the boat in CELL
@@ -23,7 +23,7 @@ typedef struct{
     int size;
 }SHIP;
 
-//tipos de navio
+//boat types
 
 extern SHIP* Pickaxe;
 extern SHIP* Carrier;
@@ -32,7 +32,7 @@ extern SHIP* Sigma;
 extern SHIP* Cruiser;
 extern SHIP* Destroyer;
 
-// criação do navio
+//create ship
 
 void create_ship(SHIP* newship,int orient,int size);
 
