@@ -129,6 +129,7 @@ void rotation_270(SHIP* ship){
 }
 
 void create_ship(SHIP* newship,int orient,int size){
+   printf("\033[1;36m");
   //SHIP *newship = (SHIP*)malloc(sizeof(SHIP));
   switch(size){
     case 2: *newship = *Destroyer;break;
@@ -150,4 +151,15 @@ void create_ship(SHIP* newship,int orient,int size){
 
  //return newship;
 
+}
+
+void print_boat(SHIP* ship){
+   printf("\033[1;36m");
+  for(int i=0;i<5;i++){
+     for(int j=0;j<5;j++){
+         printf("%c ",ship->bitmap[i][j]);
+      }
+      printf("\n");
+  }
+  printf("\n");
 }
