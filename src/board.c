@@ -79,6 +79,7 @@ int generate_number(int a,int b){
   return (a == 0)? rand()% ++b:rand() % ++b + a;
 }
 
+
 void rand_insert_ships(GAME* b,int nships){
   int boat_types[]={2,3,4,5,7,9};
   int x1,x2,y1,y2,map_size,boat,rotation;
@@ -111,8 +112,10 @@ void rand_insert_ships(GAME* b,int nships){
   }
 }
 
+
 //atacar navio
 void attack(int x,int y, CELL **map,int size,int state){
+   printf("\033[1;36m");
   //permitir ao jogador selecionar nova posição
   //no caso de este ter inserido posição fora do board
   if(x>(size-1) || y>(size-1)){
@@ -184,14 +187,28 @@ void attack(int x,int y, CELL **map,int size,int state){
 }
 
 void print_secret_board(CELL **map,int size){
+  printf("\033[1;36m");
+  printf("   ");
+  for(int i=0;i<size;i++){
+    if(i<10) printf(" %d ",i);
+
+    else    
+    printf("%d ",i);
+  }
+  printf("\n");
+  printf("\n");
+
     for(int i=0;i<size;i++){
+      if(i<10) printf(" %d ",i);
+  else
+      printf("%d ",i);
       for(int j=0;j<size;j++){
           if(map[i][j].shot == _NO_HIT){
-              printf("%c ",_NO_SHOT);
+              printf(" %c ",_NO_SHOT);
               
           }
           else
-          printf("%c ",map[i][j].shot);
+          printf(" %c ",map[i][j].shot);
       }
       printf("\n");
     }
