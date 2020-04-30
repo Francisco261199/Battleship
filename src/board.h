@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <ncurses.h>
 #include "ships.h"
+#include "menus.h"
 #include <time.h>
 
 /*MACROS*/
@@ -46,11 +47,13 @@ GAME * init_board(int size);
 
 void insert_ship(int x,int y,SHIP* ship,CELL** map, int map_size);
 
-void rand_insert_ships(GAME* gameboard,int nships);
+void rand_insert_ships(GAME* b,int nships);
 
 void attack(int x,int y, CELL **map,int size,int state);
 
 void print_game(int player,GAME * b);
+
+void user_insert(GAME* g,int nships);
 
 void print_secret_board(CELL **map,int size);
 
