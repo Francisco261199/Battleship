@@ -17,18 +17,18 @@ GAME * init_board(int size){
     for(int i=0;i<size;i++){
         pGame->map1[i] = (CELL*)malloc(size*sizeof(CELL));
         pGame->map2[i] = (CELL*)malloc(size*sizeof(CELL));
-
         for(int j=0;j<size;j++){
+         
           pGame->map1[i][j].shot= _NO_SHOT;
-          pGame->map1[i][j]->ship = NULL;
+          pGame->map1[i][j].ship = NULL;
           pGame->map2[i][j].shot= _NO_SHOT;
-          pGame->map2[i][j]->ship = NULL;
+          pGame->map2[i][j].ship = NULL;
         }
       }
   return pGame;
 }
 
-// inserção do navio no tabuleiro
+// inserção do navio no tabuleiro 
 int verify_insert(int x, int y, SHIP* ship, CELL**map, int map_size){
 
   if(x>(map_size-1) || y>(map_size-1)) return 1;
@@ -101,7 +101,6 @@ void rand_insert_ships(int map_size,CELL** map,int nships){
   }
 }
 
-
 //atacar navio
 void attack(int x,int y, CELL **map,int size,int state){
   //permitir ao jogador selecionar nova posição
@@ -159,7 +158,7 @@ void attack(int x,int y, CELL **map,int size,int state){
       printf("Miss!No Boat!\n");
       //update CELL
       map[x][y].shot = _MISSED_SHOT;
-      print_secret_board();
+      print_secret_board(map,size);
       return;
     }
     //water and attacked
