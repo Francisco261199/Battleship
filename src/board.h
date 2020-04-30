@@ -43,18 +43,16 @@ typedef struct{
 // funções de jogo
 
 GAME * init_board(int size);
-int verify_insert(int x,int y,SHIP* ship,CELL** map, int map_size);
 
 void insert_ship(int x,int y,SHIP* ship,CELL** map, int map_size);
 
-void rand_insert_ship(int map_size,CELL** map,int nships);
+//void rand_insert_ship(int map_size,CELL** map,int nships, SHIP** boat);
 
 void attack(int x,int y, CELL **map,int size,int state);
 
 void print_game(int player,GAME * b);
 
-void print_secret_board(int map, GAME * b);
+void print_secret_board(CELL **map,int size);
 
 GAME* erase_game(GAME* board);
-
 #endif

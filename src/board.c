@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <ncurses.h>
 #include "ships.h"
 #include "board.h"
 #include <time.h>
@@ -21,7 +20,9 @@ GAME * init_board(int size){
 
         for(int j=0;j<size;j++){
           pGame->map1[i][j].shot= _NO_SHOT;
+          pGame->map1[i][j]->ship = NULL;
           pGame->map2[i][j].shot= _NO_SHOT;
+          pGame->map2[i][j]->ship = NULL;
         }
       }
   return pGame;
@@ -29,20 +30,12 @@ GAME * init_board(int size){
 
 // inserção do navio no tabuleiro 
 int verify_insert(int x, int y, SHIP* ship, CELL**map, int map_size){
-
   if(x>(map_size-1) || y>(map_size-1)) return 1;
 
   int clear = 0;
   for(int i=0;i<5;i++){
     for(int j=0;j<5;j++){
-      int flag = 1;
-
-      //able to place boats in extremity of map even if bitmap doesnt fit
-      if( ((x+i-2) >= map_size || (y+j-2) >= map_size || (x+i-2) < 0 || (y+j-2) < 0 ) && ship->bitmap[i][j] == EMPTY) flag=0;
-      //out of bounds
-      else if( ((x+i-2) >= map_size || (y+j-2) >= map_size || (x+i-2) < 0 || (y+j-2) < 0 ) && ship->bitmap[i][j] != EMPTY) return 1;
-      //insert is possible for given position
-      if(flag == 1 && ship->bitmap[i][j] == NOT_HIT && map[x+i-2][y+j-2].shot == _NO_SHOT) clear++;
+      if(ship->bitmap[i][j] == NOT_HIT && map[x+i-2][y+j-2].shot == _NO_SHOT) clear++;
     }
   }
   return clear;
@@ -78,27 +71,25 @@ int generate_number(int a,int b){
   return (a == 0)? rand()% ++b:rand() % ++b + a;
 }
 
-void rand_insert_ships(int map_size,CELL** map,int nships){
+/*void rand_insert_ship(int map_size,CELL** map,int nships, SHIP** boat){
   int boat_types[]={2,3,4,5,7,9};
   for(int i=0;i<nships;i++){
     int x=0;
     int y=0;
-    SHIP newship;
-    int boat;
     while(TRUE){
       int rotation = generate_number(0,3);
       x = generate_number(0,(map_size-1));
       y = generate_number(0,(map_size-1));
-      boat = generate_number(0,5);
-      printf("x:%d, y:%d, boat = %d, rotation = %d \n",x,y,boat_types[boat],rotation);
-      create_ship(&newship,rotation,boat_types[boat]);
-      if(verify_insert(x,y,&newship,map,map_size) != newship.size) continue;
+      int boat = generate_number(0,5);
+      create_ship(*boat[i],rotation,boat_types[boat]);
+      if(verify_insert(x,y,*boat[i],map,map_size) != *boat[i]->size) continue;
       else break;
     }
-    insert_ship(x,y,&newship,map,map_size);
-    printf("Inseriu: x = %d, y = %d\n",x,y);
+    insert_ship(x,y,boat[i],map,map_size);
   }
 }
+
+*/
 
 //atacar navio
 void attack(int x,int y, CELL **map,int size,int state){
@@ -131,6 +122,7 @@ void attack(int x,int y, CELL **map,int size,int state){
       map[x][y].shot = _HIT_CELL;
       map[x][y].ship->size -= 1;
       printf("Hit!\n");
+      print_secret_board(map,size);
       if(map[x][y].ship->size == 0){
         printf("Ship Destroyed!");
         state-=1;
@@ -156,6 +148,7 @@ void attack(int x,int y, CELL **map,int size,int state){
       printf("Miss!No Boat!\n");
       //update CELL
       map[x][y].shot = _MISSED_SHOT;
+      print_secret_board();
       return;
     }
     //water and attacked
@@ -170,10 +163,25 @@ void attack(int x,int y, CELL **map,int size,int state){
   }
 }
 
+void print_secret_board(CELL **map,int size){
+    for(int i=0;i<size;i++){
+      for(int j=0;j<size;j++){
+          if(map[i][j].shot == _NO_HIT){
+              printf("%c ",_NO_SHOT);
+              
+          }
+          else
+          printf("%c ",map[i][j].shot);
+      }
+      printf("\n");
+    }
+  }
+
+
 //imprime o tabuleiro no seu estado atual
-void print_game(int player,GAME * b){
+void print_game(int map,GAME * b){
   printf("Gameboard:\n");
-  if(player == 1){
+  if(map == 1){
     for(int i=0;i<b->size;i++){
       for(int j=0;j<b->size;j++){
         printf("%c ",b->map1[i][j].shot);
@@ -181,7 +189,7 @@ void print_game(int player,GAME * b){
       printf("\n");
     }
   }
-  else if(player == 2){
+  else if(map == 2){
     for(int i=0;i<b->size;i++){
       for(int j=0;j<b->size;j++){
         printf("%c ",b->map2[i][j].shot);
@@ -192,38 +200,6 @@ void print_game(int player,GAME * b){
   else printf("Player does not exist");
   printf("\n");
 }
-
-void print_secret_board(int player,GAME * b){
-if(player == 1){
-    for(int i=0;i<b->size;i++){
-      for(int j=0;j<b->size;j++){
-          if(b->map1[i][j].shot == _NO_HIT){
-              printf("%c ",_NO_SHOT);
-              
-          }
-          else
-          printf("%c ",b->map1[i][j].shot);
-      }
-      printf("\n");
-    }
-  }
-  else if(player == 2){
-    for(int i=0;i<b->size;i++){
-      for(int j=0;j<b->size;j++){
-          if(b->map2[i][j].shot == _NO_HIT){
-          printf("%c ",_NO_SHOT);
-      }
-
-      else
-        printf("%c ",b->map2[i][j].shot);
-      }
-      printf("\n");
-    }
-  }
-  else printf("Player does not exist");
-  printf("\n");
-}
-
 
 GAME* erase_game(GAME* board){
 
