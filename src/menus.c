@@ -130,12 +130,12 @@ void get_number_boats(){
     //missing boat insertions(continue)
     if(remaining_boats > 0){
       switch(iterator){
-        case 0 : mvprintw(21,1,"Pickaxe: ");scanw("%d",&n_for_each_boat[iterator]);break;
-        case 1 : mvprintw(22,1,"Sigma: ");scanw("%d",&n_for_each_boat[iterator]);break;
-        case 2 : mvprintw(23,1,"Carrier: ");scanw("%d",&n_for_each_boat[iterator]);break;
-        case 3 : mvprintw(24,1,"Battleship: ");scanw("%d",&n_for_each_boat[iterator]);break;
-        case 4 : mvprintw(25,1,"Cruiser: ");scanw("%d",&n_for_each_boat[iterator]);break;
-        case 5 : mvprintw(26,1,"Destryoer: ");scanw("%d",&n_for_each_boat[iterator]);break;
+        case 0 : mvprintw(21,1,"Destryoer: ");scanw("%d",&n_for_each_boat[iterator]);break;
+        case 1 : mvprintw(22,1,"Cruiser: ");scanw("%d",&n_for_each_boat[iterator]);break;
+        case 2 : mvprintw(23,1,"Battleship: ");scanw("%d",&n_for_each_boat[iterator]);break;
+        case 3 : mvprintw(24,1,"Carrier: ");scanw("%d",&n_for_each_boat[iterator]);break;
+        case 4 : mvprintw(25,1,"Sigma: ");scanw("%d",&n_for_each_boat[iterator]);break;
+        case 5 : mvprintw(26,1,"Pickaxe: ");scanw("%d",&n_for_each_boat[iterator]);break;
         default: clear();mvprintw(28,1,"Error entering numbers");return;
       }
       remaining_boats-=n_for_each_boat[iterator];
@@ -167,12 +167,12 @@ int Start_menu(){
   //
 
   mvprintw(0,101,"Welcome to:");
-  mvprintw(2,79,"   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-  mvprintw(3,79," XX   ___  ____ ___ ___      ____ ____ _  _ _ ___  XX");
-  mvprintw(4,79,"XXX   |__] |__|  |   |  |    |___ [__  |__| | |__]  XXX");
-  mvprintw(5,79,"XXX   |__] |  |  |   |  |___ |___ ___] |  | | |     XXX");
-  mvprintw(6,79," XX                                                XX");
-  mvprintw(7,79,"   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  mvprintw(2,79,"    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  mvprintw(3,79,"  XX   ___  ____ ___ ___      ____ ____ _  _ _ ___  XX");
+  mvprintw(4,79,"XXX   |__] |__|  |   |  |    |___ [__  |__| | |__]   XXX");
+  mvprintw(5,79,"XXX   |__] |  |  |   |  |___ |___ ___] |  | | |      XXX");
+  mvprintw(6,79,"  XX                                                XX");
+  mvprintw(7,79,"    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
 
   while(TRUE){
@@ -248,13 +248,23 @@ int Start_game(){
 
   echo();
   mvprintw(1,1,"So lets start the game.");
-  mvprintw(2,1,"Select size of board(between 20 to 40):");
+  mvprintw(2,1,"Select size of board (between 20 to 40):");
   scanw("%d",&map_size);
-  while(map_size<20 || map_size>40){ clear();mvprintw(1,1,"Invalid size. Insert new size:");scanw("%d",&map_size);}
+  //invalid map size number
+  while(map_size<20 || map_size>40){
+    clear();
+    mvprintw(1,1,"Invalid size. Insert new size:");
+    scanw("%d",&map_size);
+  }
   clear();
-  mvprintw(1,1,"Select number of ships:");
+  mvprintw(1,1,"Select number of ships(min 6):");
   scanw("%d",&n_boats);
-  while(n_boats<0 || n_boats>(map_size*map_size)/25){clear();mvprintw(1,1,"Invalid number of boats. Insert new number of ships:");scanw("%d",&n_boats);}
+  //invalid number of boats
+  while(n_boats<0 || n_boats>(map_size*map_size)/25){
+    clear();
+    mvprintw(1,1,"Invalid number of boats. Insert new number of ships:");
+    scanw("%d",&n_boats);
+  }
   clear();
   noecho();
   //user selects random insertion
@@ -277,12 +287,13 @@ int Credits(){
 
   mvprintw(20,80,"Made By:");
   mvprintw(21,80,"##################################################");
-  mvprintw(22,80,"#                Amadeus Marques                 #");
+  mvprintw(22,80,"#                Amadeu Marques                  #");
   mvprintw(23,80,"##                     &&                       ##");
   mvprintw(24,80,"#               Francisco Ribeiro                #");
   mvprintw(25,80,"##################################################");
   mvprintw(26,80,"All rights reserved to the developers 2020.");
 
+  //back option
   while(TRUE){
     (void)attron(A_REVERSE|A_BOLD|A_ITALIC);
     mvprintw(1,1,(char*)Option[0]);
@@ -304,7 +315,7 @@ int Leave(){
   return LEAVE;
 }
 
-int menu_select(){
+int menu(){
   initscr();
   start_color();
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
@@ -336,13 +347,5 @@ int menu_select(){
     }
   }
   return ERROR;
-}
-
-int main(){
-  menu_select();
-  system("clear");
-  printf("all clear ;)\n");
-  getchar();
-  return 0;
 }
 
