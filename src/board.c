@@ -100,7 +100,7 @@ void rand_insert_ships(int map_size,CELL** map,int nships){
     //printf("Inseriu: x = %d, y = %d\n",x,y);
   }
 }
-*/
+
 
 //atacar navio
 void attack(int x,int y, CELL **map,int size,int state){
