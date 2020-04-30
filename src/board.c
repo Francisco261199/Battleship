@@ -79,25 +79,35 @@ int generate_number(int a,int b){
   return (a == 0)? rand()% ++b:rand() % ++b + a;
 }
 
-void rand_insert_ships(int map_size,CELL** map,int nships){
+void rand_insert_ships(GAME* b,int nships){
   int boat_types[]={2,3,4,5,7,9};
+  int x1,x2,y1,y2,map_size,boat,rotation;
+  map_size = b->size;
   for(int i=0;i<nships;i++){
-    int x=0;
-    int y=0;
+    x1 = x2 = y1 = y2 = 0;
     SHIP newship;
-    int boat;
-    while(TRUE){
-      int rotation = generate_number(0,3);
-      x = generate_number(0,(map_size-1));
-      y = generate_number(0,(map_size-1));
-      boat = generate_number(0,5);
-      //printf("x:%d, y:%d, boat = %d, rotation = %d \n",x,y,boat_types[boat],rotation);
-      create_ship(&newship,rotation,boat_types[boat]);
-      if(verify_insert(x,y,&newship,map,map_size) != newship.size) continue;
-      else break;
+    rotation = generate_number(0,3);
+    x1 = generate_number(0,(map_size-1));
+    y1 = generate_number(0,(map_size-1));
+    x2 = generate_number(0,(map_size-1));
+    y2 = generate_number(0,(map_size-1));
+    boat = generate_number(0,5);
+
+    create_ship(&newship,rotation,boat_types[boat]);
+    if(verify_insert(x1,y1,&newship,b->map1,map_size) != newship.size){
+      while(verify_insert(x1,y1,&newship,b->map1,map_size) != newship.size){
+        x1 = generate_number(0,(map_size-1));
+        y1 = generate_number(0,(map_size-1));
+      }
     }
-    insert_ship(x,y,&newship,map,map_size);
-    //printf("Inseriu: x = %d, y = %d\n",x,y);
+    if(verify_insert(x2,y2,&newship,b->map2,map_size) != newship.size){
+      while(verify_insert(x2,y2,&newship,b->map2,map_size) != newship.size){
+        x2 = generate_number(0,(map_size-1));
+        y2 = generate_number(0,(map_size-1));
+      }
+    }
+    insert_ship(x1,y1,&newship,b->map1,map_size);
+    insert_ship(x2,y2,&newship,b->map2,map_size);
   }
 }
 
