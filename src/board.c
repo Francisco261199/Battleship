@@ -73,6 +73,59 @@ void insert_ship(int x,int y,SHIP* ship,CELL** map, int map_size){
     }
   }
 }
+void user_insert(GAME* g,int nships){
+  SHIP newship;
+  int boat_types[]={2,3,4,5,7,9};
+  char *boats[]={"Destryoer","Cruiser","Battleship","Carrier","Sigma","Pickaxe"};
+  int x,y,boat,rotation;
+  system("clear");
+  printf("Time to insert your boats!\n");
+  printf("Remember: X->rows, Y->cols, (y,x)->boat's center\n");
+  printf("For rotations you have:\n");
+  printf(" ___________\n");
+  printf("|           |\n");
+  printf("| 0 -> 0º   |\n");
+  printf("| 1 -> 90º  |\n");
+  printf("| 2 -> 180º |\n");
+  printf("| 3 -> 270º |\n");
+  printf("|___________|\n");
+  int player = 1;
+  int boat_rotation;
+  for(;player<=2;player++){
+    boat_rotation = 0;
+    printf("Player %d: \n",player);
+    for(int i=0;i<6;i++){
+      for(int j=0;j<n_for_each_boat[i];j++){
+        if(player == 1){
+          printf("%s\n",(char*)boats[i]);
+          printf("Select boat rotation: ");scanf("%d",&boat_rotation);
+          while(boat_rotation < 0 || boat_rotation > 3){printf("Invalid rotation. Insert new one: ");scanf("%d",&boat_rotation);}
+          switch(i){
+            case 0: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map1,g->size);break;
+            case 1: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map1,g->size);break;
+            case 2: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map1,g->size);break;
+            case 3: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map1,g->size);break;
+            case 4: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map1,g->size);break;
+            case 5: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map1,g->size);break;
+          }
+        }
+        else{
+          printf("%s\n",(char*)boats[i]);
+          printf("Select Rotation: ");scanf("%d",&boat_rotation);
+          while(boat_rotation < 0 || boat_rotation > 3){printf("Invalid rotation. Insert new one: ");scanf("%d",&boat_rotation);}
+          switch(i){
+            case 0: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map2,g->size);break;
+            case 1: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map2,g->size);break;
+            case 2: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map2,g->size);break;
+            case 3: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map2,g->size);break;
+            case 4: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map2,g->size);break;
+            case 5: printf("X:");scanf("%d",&x);printf("Y:");scanf("%d",&y);create_ship(&newship,boat_rotation,boat_types[i]);insert_ship(x,y,&newship,g->map2,g->size);break;
+          }
+        }
+      }
+    }
+  }
+}
 
 //inserçáo aleatória no tabuleiro
 int generate_number(int a,int b){
