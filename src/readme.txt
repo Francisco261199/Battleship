@@ -29,8 +29,8 @@ Como jogar:
     -No caso do jogador acertar num navio a palavra "HIT" aparecerá no terminal e será revelado o tabuleiro com as posições atacadas;
     -Apos a jogada, começa o turno do jogador 2;
 
-7-No caso de um barco ser destruido a mensagem "Ship Destroyed!" apareceá no terminal;
-8-O jogo termina quando um dos jogadores não tiver mas barcos;
+7-No caso de um barco ser destruido a mensagem "Ship Destroyed!" aparecerá no terminal;
+8-O jogo termina quando um dos jogadores não tiver mais barcos;
 
 
 
@@ -38,7 +38,7 @@ Divisão de ficheiros:
 
 menus.c -- gestão da interface do jogo.
 main.c --  gestão do i/o do jogo e execução do ciclo de jogo.
-board.c -- estrutura do tabuleiro, inserção e inserção random,print board e attack.
+board.c -- estrutura do tabuleiro, inserção e inserção random, print board e attack.
 ships.c -- estruturas de navios, criação de navios e rotações.
 makefile -- makefile do jogo, resulta no executavel Battleship.
 
@@ -47,7 +47,7 @@ Estruturas:
 Estrutura SHIP : 
 Tem 2 inteiros (x e y), um array bidimensional de chars(bitmap) e um inteiro size
 
-As variaveis x e y guardam as coordenadas do centro do navio no mapa depois de inserido.Isto é feito
+As variaveis x e y guardam as coordenadas do centro do navio no mapa depois de inserido. Isto é feito
 para converter as coordenadas do mapa CELL para coordenadas no bitmap.
 
 O char bitmap guarda a representação do navio, 0 é utilizado para espaço vazio e 1 para peça do navio.
