@@ -11,18 +11,21 @@ void game(){
   int player = 1;
   //color Cyan
   printf("\033[1;36m");
+
   if( START_GAME_END != menu()){
     printf("Error!");
-    exit(0);
+    exit(1);
   }
   GAME* gameboard = init_board(map_size);
 
   gameboard->state1 = n_boats;
   gameboard->state2 = n_boats;
 
-  if(rand_flag==1) rand_insert_ships(gameboard,n_boats);
-  else user_insert(gameboard,n_boats);
+  if(rand_flag==1) rand_insert_ships(gameboard);
+  else user_insert(gameboard);
 
+  printf("Boats Inserted Succsefully! When you're both ready press ENTER to start!");
+  getchar();
   system("clear");
   int n;
   while(TRUE){
@@ -30,6 +33,7 @@ void game(){
     int x,y;
     switch (player){
       case 1:
+        printf("\033[1;36m");
         printf("PLAYER 1's Turn\n");
         printf("Positions hit:\n");
         print_secret_board(gameboard->map2,map_size);
@@ -44,6 +48,7 @@ void game(){
         break;
 
       case 2:
+        printf("\033[1;36m");
         printf("PLAYER 2's Turn\n");
         printf("Positions hit:\n");
         print_secret_board(gameboard->map1,map_size);
