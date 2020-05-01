@@ -3,17 +3,10 @@
 
 #define SHIPS_H
 
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-//macros
-
-#define NORTH 0
-#define SOUTH 1
-#define WEST  2
-#define EAST  3
-
-//ship structure
+//estrutura do navio
 
 typedef struct{
     //center coordinates of the boat in CELL
@@ -32,8 +25,10 @@ extern SHIP* Sigma;
 extern SHIP* Cruiser;
 extern SHIP* Destroyer;
 
-//create ship
+// criação do navio
 
 void create_ship(SHIP* newship,int orient,int size);
+void print_boat(SHIP* ship);
 
 #endif
+
