@@ -135,7 +135,7 @@ void get_number_boats(){
     //missing boat insertions(continue)
     if(remaining_boats >= 0){
       switch(iterator){
-        case 0 : mvprintw(21,1,"Destryoer: ");scanw("%d",&n_for_each_boat[iterator]);break;
+        case 0 : mvprintw(21,1,"Destroyer: ");scanw("%d",&n_for_each_boat[iterator]);break;
         case 1 : mvprintw(22,1,"Cruiser: ");scanw("%d",&n_for_each_boat[iterator]);break;
         case 2 : mvprintw(23,1,"Battleship: ");scanw("%d",&n_for_each_boat[iterator]);break;
         case 3 : mvprintw(24,1,"Carrier: ");scanw("%d",&n_for_each_boat[iterator]);break;
