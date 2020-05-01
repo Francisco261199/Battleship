@@ -1,11 +1,13 @@
-#include<stdio.h>
-#include"ships.h"
-#include<stdlib.h>
+#include <stdio.h>
+#include "ships.h"
+#include <stdlib.h>
 
 
 //Create variables in memory
 static SHIP  Pickaxe_data =
 {
+.x=0,
+.y=0,
 .size = 9,
 .bitmap = { {'0', '1', '1', '1', '0'}, //
             {'1', '0', '1', '0', '1'}, //
@@ -17,6 +19,8 @@ static SHIP  Pickaxe_data =
 
 static SHIP  Sigma_data =
 {
+.x=0,
+.y=0,
 .size = 7,
 .bitmap = { {'0', '0', '1', '1', '0'}, //
             {'0', '0', '1', '0', '0'}, //
@@ -28,6 +32,8 @@ static SHIP  Sigma_data =
 
 static SHIP  Carrier_data =
 {
+.x=0,
+.y=0,
 .size = 5,
 .bitmap = { {'0', '0', '1', '0', '0'}, //
             {'0', '0', '1', '0', '0'}, //
@@ -39,6 +45,8 @@ static SHIP  Carrier_data =
 
 static SHIP  Battleship_data =
 {
+.x=0,
+.y=0,
 .size = 4,
 .bitmap = { {'0', '0', '1', '0', '0'}, //
             {'0', '0', '1', '0', '0'}, //
@@ -50,6 +58,8 @@ static SHIP  Battleship_data =
 
 static SHIP  Cruiser_data =
 {
+.x=0,
+.y=0,
 .size = 3,
 .bitmap = { {'0', '0', '0', '0', '0'}, //
             {'0', '0', '1', '0', '0'}, //
@@ -61,6 +71,8 @@ static SHIP  Cruiser_data =
 
 static SHIP  Destroyer_data =
 {
+.x =0,
+.y =0,
 .size = 2,
 .bitmap = { {'0', '0', '0', '0', '0'}, //
             {'0', '0', '1', '0', '0'}, //
