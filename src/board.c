@@ -76,7 +76,7 @@ void insert_ship(int x,int y,SHIP* ship,CELL** map, int map_size){
 //Users
 void user_insert(GAME* g,int nships){
   int boat_types[]={2,3,4,5,7,9};
-  char *boats[]={"Destryoer","Cruiser","Battleship","Carrier","Sigma","Pickaxe"};
+  char *boats[]={"Destroyer","Cruiser","Battleship","Carrier","Sigma","Pickaxe"};
   int x,y,boat,rotation;
   system("clear");
   printf("Time to insert your boats!\n");
@@ -339,7 +339,6 @@ void print_game(int player,GAME * b){
 }
 
 void print_secret_board(CELL **map,int size){
-  printf("\033[1;36m");
   printf("   ");
   for(int i=0;i<size;i++){
     if(i<10) printf(" %d ",i);
@@ -352,10 +351,23 @@ void print_secret_board(CELL **map,int size){
     if(i<10) printf(" %d ",i);
     else printf("%d ",i);
     for(int j=0;j<size;j++){
-      if(map[i][j].shot == _NO_HIT){
+      if(map[i][j].shot == _NO_HIT || map[i][j].shot == _NO_SHOT){
+        //cyan
+        printf("\033[1;36m");
         printf(" %c ",EMPTY);
       }
-      else printf(" %c ",map[i][j].shot);
+      else if(map[i][j].shot == _HIT_CELL){
+        //green
+        printf("\033[1;32m");
+        printf(" %c ",map[i][j].shot);
+        printf("\033[1;36m");
+      }
+      else if(map[i][j].shot == _MISSED_SHOT){
+        //red
+        printf("\033[1;31m");
+        printf(" %c ",map[i][j].shot);
+        printf("\033[1;36m");
+      }
     }
     printf("\n");
   }
