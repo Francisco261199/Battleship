@@ -1,8 +1,8 @@
-#include<unistd.h>
-#include<stdlib.h>
-#include<ncurses.h>
-#include"ships.h"
-#include"board.h"
+#include <unistd.h>
+#include <stdlib.h>
+#include <ncurses.h>
+#include "ships.h"
+#include "board.h"
 
 
 #define START_MENU 0
@@ -22,6 +22,7 @@ int n_for_each_boat[6];
 void LEARN_TO_PLAY(){
   //LEARN TO PLAY
   start_color();
+  curs_set(0);
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
   attron(A_NORMAL|A_BOLD|A_ITALIC);
@@ -39,6 +40,7 @@ void LEARN_TO_PLAY(){
 void STARTING_GAME(){
   //Starting a game
   start_color();
+  curs_set(0);
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
   attron(A_NORMAL|A_BOLD|A_ITALIC);
@@ -55,6 +57,7 @@ void STARTING_GAME(){
 }
 
 int select_mode(){
+  curs_set(0);
   char *Options[]={".Random Insertion", ".Selected Insertion"};
   int highlighted,choice;
   highlighted = choice = 0;
@@ -95,6 +98,7 @@ int select_mode(){
 void prints_ships(){
   start_color();
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
+  curs_set(0);
   (void)attron(COLOR_PAIR(1));
     mvprintw(0,18,"Select Ships:");
     mvprintw(2,1,"2-Destroyer");   mvprintw(2,20,"3-Cruiser");       mvprintw(2,40,"4-Battleship");
@@ -115,20 +119,21 @@ void prints_ships(){
     mvprintw(16,1,"0 0 1 0 0");    mvprintw(16,21,"0 1 1 0 0");      mvprintw(16,41,"0 0 1 0 0");
 
     mvprintw(18,1,"X represents the position you choose to insert the boat");
-    getch();
+
 }
 
 void get_number_boats(){
   int remaining_boats = n_boats;
   int iterator = 0;
   start_color();
+  curs_set(1);
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
   mvprintw(20,1,"Now lets select number of boats for each type:");
   echo();
   while(TRUE){
     //missing boat insertions(continue)
-    if(remaining_boats > 0){
+    if(remaining_boats >= 0){
       switch(iterator){
         case 0 : mvprintw(21,1,"Destryoer: ");scanw("%d",&n_for_each_boat[iterator]);break;
         case 1 : mvprintw(22,1,"Cruiser: ");scanw("%d",&n_for_each_boat[iterator]);break;
@@ -143,19 +148,26 @@ void get_number_boats(){
       iterator++;
     }
     //inserted too many boats or no more boats for remaing types(restart)
-    if(remaining_boats < 0 || (remaining_boats == 0 && iterator < 6)){
+    if(remaining_boats < 0 /*|| (remaining_boats == 0 && iterator < 6)*/){
       clear();
       mvprintw(20,1,"Impossible configuration. Please try again");
       iterator = 0;
       remaining_boats = n_boats;
       prints_ships();
     }
+
+    //
+    //if(remaining_boats == 0 && iterator < 6) continue;
+
     //insertion of all boats for all types(stop)
     if(remaining_boats == 0 && iterator == 6) break;
   }
 }
 
 int Start_menu(){
+  int xMax,yMax;
+  curs_set(0);
+  getmaxyx(stdscr,xMax,yMax);
   int select;
   int highlighted = 8;
   char *Options[]={"Start Game","Credits","Leave"};
@@ -166,19 +178,19 @@ int Start_menu(){
   (void)attron(COLOR_PAIR(1));
   //
 
-  mvprintw(0,101,"Welcome to:");
-  mvprintw(2,79,"    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-  mvprintw(3,79,"  XX   ___  ____ ___ ___      ____ ____ _  _ _ ___  XX");
-  mvprintw(4,79,"XXX   |__] |__|  |   |  |    |___ [__  |__| | |__]   XXX");
-  mvprintw(5,79,"XXX   |__] |  |  |   |  |___ |___ ___] |  | | |      XXX");
-  mvprintw(6,79,"  XX                                                XX");
-  mvprintw(7,79,"    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  mvprintw(0,yMax/2-6,"Welcome to:");
+  mvprintw(2,yMax/2-28,"    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  mvprintw(3,yMax/2-28,"  XX   ___  ____ ___ ___      ____ ____ _  _ _ ___  XX");
+  mvprintw(4,yMax/2-28,"XXX   |__] |__|  |   |  |    |___ [__  |__| | |__]   XXX");
+  mvprintw(5,yMax/2-28,"XXX   |__] |  |  |   |  |___ |___ ___] |  | | |      XXX");
+  mvprintw(6,yMax/2-28,"  XX                                                XX");
+  mvprintw(7,yMax/2-28,"    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
 
   while(TRUE){
     for(int i=8;i<11;i++){
       if(i == highlighted)(void)attron(A_REVERSE|A_BOLD|A_ITALIC);
-      mvprintw(i+1,100,(char*)Options[i-8]);
+      mvprintw(i+1,yMax/2-5,(char*)Options[i-8]);
       (void)attroff(A_REVERSE);
     }
     select = getch();
@@ -198,6 +210,9 @@ int Start_menu(){
   return 0;
 }
 int Start_game(){
+  int xMax,yMax;
+  curs_set(0);
+  getmaxyx(stdscr,xMax,yMax);
   char *Option[] = {"Back","Next"};
   start_color();
   keypad(stdscr,true);
@@ -221,12 +236,12 @@ int Start_game(){
         (void)attron(A_REVERSE|A_BOLD|A_ITALIC);
         mvprintw(1,1,(char*)Option[0]);
         (void)attroff(A_REVERSE);
-        mvprintw(1,206,(char*)Option[1]);
+        mvprintw(1,yMax-4,(char*)Option[1]);
       }
       //cursor in "Next"
       else{
         (void)attron(A_REVERSE|A_BOLD|A_ITALIC);
-        mvprintw(1,206,(char*)Option[1]);
+        mvprintw(1,yMax-4,(char*)Option[1]);
         (void)attroff(A_REVERSE);
         mvprintw(1,1,(char*)Option[0]);
       }
@@ -247,6 +262,7 @@ int Start_game(){
   }
 
   echo();
+  curs_set(1);
   mvprintw(1,1,"So lets start the game.");
   mvprintw(2,1,"Select size of board (between 20 to 40):");
   scanw("%d",&map_size);
@@ -279,19 +295,22 @@ int Start_game(){
 }
 
 int Credits(){
+  int xMax,yMax;
+  curs_set(0);
+  getmaxyx(stdscr,xMax,yMax);
   char *Option[] = {"Back"};
   start_color();
   keypad(stdscr,true);
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
 
-  mvprintw(20,80,"Made By:");
-  mvprintw(21,80,"##################################################");
-  mvprintw(22,80,"#                Amadeu Marques                  #");
-  mvprintw(23,80,"##                     &&                       ##");
-  mvprintw(24,80,"#               Francisco Ribeiro                #");
-  mvprintw(25,80,"##################################################");
-  mvprintw(26,80,"All rights reserved to the developers 2020.");
+  mvprintw(xMax/2-3,yMax/2-25,"Made By:");
+  mvprintw(xMax/2-2,yMax/2-25,"##################################################");
+  mvprintw(xMax/2-1,yMax/2-25,"#                Amadeu Marques                  #");
+  mvprintw(xMax/2,  yMax/2-25,"##                     &&                       ##");
+  mvprintw(xMax/2+1,yMax/2-25,"#               Francisco Ribeiro                #");
+  mvprintw(xMax/2+2,yMax/2-25,"##################################################");
+  mvprintw(xMax/2+3,yMax/2-25,"All rights reserved to the developers 2020.");
 
   //back option
   while(TRUE){
@@ -306,6 +325,7 @@ int Credits(){
 
 int Leave(){
   start_color();
+  curs_set(0);
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
   (void)attron(A_BOLD|A_ITALIC);
@@ -343,9 +363,8 @@ int menu(){
       //stop ncurses screen
       keypad(stdscr,false);
       endwin();
-      return LEAVE;
+      exit(1);
     }
   }
   return ERROR;
 }
-
