@@ -47,16 +47,17 @@ int verify_insert(int x,int y,SHIP* ship,CELL** map, int map_size);
 
 void insert_ship(int x,int y,SHIP* ship,CELL** map, int map_size);
 
-void rand_insert_ships(GAME* gameboard,int nships);
+void rand_insert_ships(GAME* gameboard);
 
-void user_insert(GAME* gameboard,int nships);
+void user_insert(GAME* gameboard);
 
 int attack(int x,int y, CELL **map,int size);
 
-void print_game(int player,GAME * b);
+void print_game(CELL** map,int size);
 
 void print_secret_board(CELL** map, int size);
 
 GAME* erase_game(GAME* board);
 
 #endif
+
