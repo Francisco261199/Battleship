@@ -1,12 +1,12 @@
-#ifndef MENUS_H
+ifndef MENUS_H
 #define MENUS_H
 
 
-#include<unistd.h>
-#include<stdlib.h>
-#include<ncurses.h>
-#include"ships.h"
-#include"board.h"
+#include <unistd.h>
+#include <stdlib.h>
+#include <ncurses.h>
+#include "ships.h"
+#include "board.h"
 
 
 // MACROS
@@ -27,6 +27,6 @@ int n_boats,map_size,rand_flag;
 int n_for_each_boat[6];
 
 //functions
-int menu_select();
+int menu();
 
 #endif
