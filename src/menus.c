@@ -126,12 +126,12 @@ void get_number_boats(){
   int remaining_boats = n_boats;
   int iterator = 0;
   start_color();
-  curs_set(1);
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
   mvprintw(20,1,"Now lets select number of boats for each type:");
   echo();
   while(TRUE){
+    curs_set(1);
     //missing boat insertions(continue)
     if(remaining_boats >= 0){
       switch(iterator){
@@ -147,17 +147,14 @@ void get_number_boats(){
       mvprintw(20+iterator,100,"Number of boats still available: %d",remaining_boats);
       iterator++;
     }
-    //inserted too many boats or no more boats for remaing types(restart)
-    if(remaining_boats < 0 /*|| (remaining_boats == 0 && iterator < 6)*/){
+    //inserted too many boats or no more boats for remaing types or no boat for one type(restart)
+    if(remaining_boats < 0 || (remaining_boats == 0 && iterator < 6) || n_for_each_boat[iterator-1] == 0){
       clear();
       mvprintw(20,1,"Impossible configuration. Please try again");
       iterator = 0;
       remaining_boats = n_boats;
       prints_ships();
     }
-
-    //
-    //if(remaining_boats == 0 && iterator < 6) continue;
 
     //insertion of all boats for all types(stop)
     if(remaining_boats == 0 && iterator == 6) break;
@@ -276,21 +273,19 @@ int Start_game(){
   mvprintw(1,1,"Select number of ships(min 6):");
   scanw("%d",&n_boats);
   //invalid number of boats
-  while(n_boats<0 || n_boats>(map_size*map_size)/25){
+  while(n_boats<6 || n_boats>(map_size*map_size)/25){
     clear();
-    mvprintw(1,1,"Invalid number of boats. Insert new number of ships:");
+    mvprintw(1,1,"Invalid number of boats. Insert new number:");
     scanw("%d",&n_boats);
   }
   clear();
   noecho();
   //user selects random insertion
-  if( select_mode() == RANDOM_INSERTION){ rand_flag=1; return START_GAME_END;}
-  else{
-    clear();
-    rand_flag = 0;
-    prints_ships();
-    get_number_boats();
-  }
+  if( select_mode() == RANDOM_INSERTION) rand_flag = 1;
+  else rand_flag = 0;
+  clear();
+  prints_ships();
+  get_number_boats();
   return START_GAME_END;
 }
 
