@@ -8,7 +8,8 @@
 #include "menus.h"
 
 void game(){
-  int player = 1;
+  int x,y,player,n;
+  player = 1;
   //color Cyan
   printf("\033[1;36m");
 
@@ -24,49 +25,46 @@ void game(){
   if(rand_flag==1) rand_insert_ships(gameboard);
   else user_insert(gameboard);
 
-  printf("Boats inserted succsefully! When you're both ready press ENTER to start!");
+  printf("Boats inserted succsefully! When you're both ready press ENTER to start!\n");
   getchar();
-  system("clear");
-  int n;
+
   while(TRUE){
     n=0;
-    int x,y;
+    sleep(1);
+    system("clear");
+    printf("\033[1;36m");
+    printf("PLAYER %d's Turn\n",player);
+    printf("Positions hit:\n");
+
+    //print boats in map
+    if(player == 1) print_secret_board(gameboard->map1,map_size);
+    else print_secret_board(gameboard->map2,map_size);
+
+    //get coordinates
+    printf("Select coordinates to attack:\n");
+    printf("X: ");scanf("%d",&x);
+    printf("Y: ");scanf("%d",&y);
+
+    //player x attacks selected position
     switch (player){
       case 1:
-        printf("\033[1;36m");
-        printf("PLAYER 1's Turn\n");
-        printf("Positions hit:\n");
-        print_secret_board(gameboard->map2,map_size);
-        printf("Select coordinates to attack:\n");
-        printf("X: ");scanf("%d",&x);
-        printf("Y: ");scanf("%d",&y);
         n = attack(x,y,gameboard->map2,map_size);
         gameboard->state2-=n;
         player=2;
-        sleep(1);
-        system("clear");
         break;
 
       case 2:
-        printf("\033[1;36m");
-        printf("PLAYER 2's Turn\n");
-        printf("Positions hit:\n");
-        print_secret_board(gameboard->map1,map_size);
-        printf("Select coordinates to attack:\n");
-        printf("X: ");scanf("%d",&x);
-        printf("Y: ");scanf("%d",&y);
         n = attack(x,y,gameboard->map1,map_size);
         gameboard->state1-=n;
         player=1;
-        sleep(1);
-        system("clear");
         break;
       }
+
       if(gameboard->state1 == 0){
         printf("Congratulations Player 2, you won!\n");
         break;
       }
-      else if (gameboard->state2 == 0){
+      else if(gameboard->state2 == 0){
         printf("Congratulations Player 1,you won!\n");
         break;
       }
@@ -74,7 +72,6 @@ void game(){
     sleep(2);
     gameboard = erase_game(gameboard);
 }
-
 
 
 int main(){
