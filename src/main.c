@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-#include <ncurses.h>
 #include "ships.h"
 #include "board.h"
 #include <time.h>
