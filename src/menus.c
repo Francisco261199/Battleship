@@ -56,11 +56,39 @@ void STARTING_GAME(){
   attroff(A_BOLD|A_ITALIC);
 }
 
-int select_mode(){
+void prints_ships(){
+  start_color();
+  init_pair(1,COLOR_CYAN,COLOR_BLACK);
   curs_set(0);
-  char *Options[]={".Random Insertion", ".Manual Insertion"};
+  (void)attron(COLOR_PAIR(1));
+    mvprintw(0,18,"Select Ships:");
+    mvprintw(2,1,"2-Destroyer");   mvprintw(2,20,"3-Cruiser");       mvprintw(2,40,"4-Battleship");
+
+    mvprintw(4,1,"0 0 0 0 0");     mvprintw(4,21,"0 0 0 0 0");       mvprintw(4,41,"0 0 1 0 0");
+    mvprintw(5,1,"0 0 1 0 0");     mvprintw(5,21,"0 0 1 0 0");       mvprintw(5,41,"0 0 1 0 0");
+    mvprintw(6,1,"0 0 X 0 0");     mvprintw(6,21,"0 0 X 0 0");       mvprintw(6,41,"0 0 X 0 0");
+    mvprintw(7,1,"0 0 0 0 0");     mvprintw(7,21,"0 0 1 0 0");       mvprintw(7,41,"0 0 1 0 0");
+    mvprintw(8,1,"0 0 0 0 0");     mvprintw(8,21,"0 0 0 0 0");       mvprintw(8,41,"0 0 0 0 0");
+
+
+    mvprintw(10,1,"5-Carrier");    mvprintw(10,21,"7-Sigma");        mvprintw(10,41,"9-Pickaxe");
+
+    mvprintw(12,1,"0 0 1 0 0");    mvprintw(12,21,"0 0 1 1 0");      mvprintw(12,41,"0 1 1 1 0");
+    mvprintw(13,1,"0 0 1 0 0");    mvprintw(13,21,"0 0 1 0 0");      mvprintw(13,41,"1 0 1 0 1");
+    mvprintw(14,1,"0 0 X 0 0");    mvprintw(14,21,"0 0 X 0 0");      mvprintw(14,41,"0 0 X 0 0");
+    mvprintw(15,1,"0 0 1 0 0");    mvprintw(15,21,"0 0 1 0 0");      mvprintw(15,41,"0 0 1 0 0");
+    mvprintw(16,1,"0 0 1 0 0");    mvprintw(16,21,"0 1 1 0 0");      mvprintw(16,41,"0 0 1 0 0");
+
+    mvprintw(18,1,"X represents the position you choose to insert the boat");
+}
+
+//select random or manual insertion
+int select_mode(){
   int highlighted,choice;
   highlighted = choice = 0;
+  char *Options[]={".Random Insertion", ".Manual Insertion"};
+
+  curs_set(0);
   start_color();
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
@@ -93,33 +121,6 @@ int select_mode(){
     }
   }
   return ERROR;
-}
-
-void prints_ships(){
-  start_color();
-  init_pair(1,COLOR_CYAN,COLOR_BLACK);
-  curs_set(0);
-  (void)attron(COLOR_PAIR(1));
-    mvprintw(0,18,"Select Ships:");
-    mvprintw(2,1,"2-Destroyer");   mvprintw(2,20,"3-Cruiser");       mvprintw(2,40,"4-Battleship");
-
-    mvprintw(4,1,"0 0 0 0 0");     mvprintw(4,21,"0 0 0 0 0");       mvprintw(4,41,"0 0 1 0 0");
-    mvprintw(5,1,"0 0 1 0 0");     mvprintw(5,21,"0 0 1 0 0");       mvprintw(5,41,"0 0 1 0 0");
-    mvprintw(6,1,"0 0 X 0 0");     mvprintw(6,21,"0 0 X 0 0");       mvprintw(6,41,"0 0 X 0 0");
-    mvprintw(7,1,"0 0 0 0 0");     mvprintw(7,21,"0 0 1 0 0");       mvprintw(7,41,"0 0 1 0 0");
-    mvprintw(8,1,"0 0 0 0 0");     mvprintw(8,21,"0 0 0 0 0");       mvprintw(8,41,"0 0 0 0 0");
-
-
-    mvprintw(10,1,"5-Carrier");    mvprintw(10,21,"7-Sigma");        mvprintw(10,41,"9-Pickaxe");
-
-    mvprintw(12,1,"0 0 1 0 0");    mvprintw(12,21,"0 0 1 1 0");      mvprintw(12,41,"0 1 1 1 0");
-    mvprintw(13,1,"0 0 1 0 0");    mvprintw(13,21,"0 0 1 0 0");      mvprintw(13,41,"1 0 1 0 1");
-    mvprintw(14,1,"0 0 X 0 0");    mvprintw(14,21,"0 0 X 0 0");      mvprintw(14,41,"0 0 X 0 0");
-    mvprintw(15,1,"0 0 1 0 0");    mvprintw(15,21,"0 0 1 0 0");      mvprintw(15,41,"0 0 1 0 0");
-    mvprintw(16,1,"0 0 1 0 0");    mvprintw(16,21,"0 1 1 0 0");      mvprintw(16,41,"0 0 1 0 0");
-
-    mvprintw(18,1,"X represents the position you choose to insert the boat");
-
 }
 
 void get_number_boats(){
@@ -162,15 +163,14 @@ void get_number_boats(){
 }
 
 int Start_menu(){
-  int xMax,yMax;
-  curs_set(0);
-  getmaxyx(stdscr,xMax,yMax);
-  int select;
-  int highlighted = 8;
+  int xMax,yMax,select,highlighted;
+  highlighted = 8;
   char *Options[]={"Start Game","Credits","Leave"};
-  keypad(stdscr,TRUE);
   //Flags
   start_color();
+  curs_set(0);
+  getmaxyx(stdscr,xMax,yMax);
+  keypad(stdscr,TRUE);
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
   //
@@ -206,21 +206,23 @@ int Start_menu(){
   }
   return 0;
 }
+
+//initial menu
 int Start_game(){
-  int xMax,yMax;
+  int select,highlighted,menu_iterator,xMax,yMax;
+  highlighted = menu_iterator = 1;
+  char *Option[] = {"Back","Next"};
+
   curs_set(0);
   getmaxyx(stdscr,xMax,yMax);
-  char *Option[] = {"Back","Next"};
   start_color();
   keypad(stdscr,true);
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
-  int select,highlighted,menu_iterator;
-  highlighted = menu_iterator = 1;
+
 
   //explain game
   while(menu_iterator != 3){
-    //move between menus
     switch(menu_iterator){
       case 0: return START_MENU;
       case 1: LEARN_TO_PLAY();break;
@@ -263,7 +265,7 @@ int Start_game(){
   mvprintw(1,1,"Starting Game");
   mvprintw(2,1,"Select size of board (between 20 and 40):");
   scanw("%d",&map_size);
-  //invalid map size number
+  //invalid map size
   while(map_size<20 || map_size>40){
     clear();
     mvprintw(1,1,"Invalid size. Insert new size:");
@@ -291,9 +293,10 @@ int Start_game(){
 
 int Credits(){
   int xMax,yMax;
+  char *Option[] = {"Back"};
+
   curs_set(0);
   getmaxyx(stdscr,xMax,yMax);
-  char *Option[] = {"Back"};
   start_color();
   keypad(stdscr,true);
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
@@ -318,7 +321,7 @@ int Credits(){
   return 0;
 }
 
-int Leave(){
+void Leave(){
   start_color();
   curs_set(0);
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
@@ -327,7 +330,6 @@ int Leave(){
   mvprintw(1,1,"Thank you for playing the game. Hope you comeback for more incredible fights.");
   (void)attroff(A_BOLD|A_ITALIC);
   getch();
-  return LEAVE;
 }
 
 int menu(){
@@ -343,9 +345,8 @@ int menu(){
       case START_MENU: state = Start_menu();break;
       case START_GAME: state = Start_game();break;
       case CREDITS: state = Credits();break;
-      case LEAVE: state = Leave();break;
+      case LEAVE: Leave();endwin();exit(1);
     }
-    clear();
     if(state == START_GAME_END){
       (void)attroff(COLOR_PAIR(1));
       keypad(stdscr,false);
@@ -353,13 +354,7 @@ int menu(){
       endwin();
       return START_GAME_END;
     }
-    if(state == LEAVE){
-      (void)attroff(COLOR_PAIR(1));
-      //stop ncurses screen
-      keypad(stdscr,false);
-      endwin();
-      exit(1);
-    }
+    clear();
   }
   return ERROR;
 }
