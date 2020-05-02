@@ -38,8 +38,8 @@ void game(){
     printf("Positions hit:\n");
 
     //print boats in map
-    if(player == 1) print_secret_board(gameboard->map1,map_size);
-    else print_secret_board(gameboard->map2,map_size);
+    if(player == 1) print_secret_board(gameboard->map2,map_size);
+    else print_secret_board(gameboard->map1,map_size);
 
     //get coordinates
     printf("Select coordinates to attack:\n");
