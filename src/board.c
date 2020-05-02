@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "ships.h"
 #include "board.h"
+#include "menus.c"
 
 // função de criação dos tabuleiros a partir do tamanho indicado
 
