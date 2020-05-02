@@ -67,6 +67,8 @@ o estado do jogo é indicado por quantos navios o jogador tem restantes.
 Funções do menus.c:
 Funções do main.c:
 
+game -- função que junta todas as componentes do menus.c e board.c para criar o jogo em si, inicializa o jogo e entra num ciclo que permite aos jogadores atacar alternadamente até que todos os navios de um deles sejam destruidos, quando sai desse ciclo executa a função erase_game;
+
 
 Funções do board.c:
 init_board -- Inicializa os mapas de cada jogador, alocando a memoria necessária e preenchendo os campos shot do SHIP com 0 (não atacado).
@@ -76,11 +78,21 @@ Verify_Insert -- Verifica se é possivel inserir o navio na posição indicada.
 
 insert_ship -- insere o navio no mapa de jogo, se não for possivel inserir pede novas coordenadas.
 
+user_insert -- função utilizada para criar todos os navios, aplicar rotações e inseri-los no mapa.
+
 generate_number -- gera um numero aleatório entre a e b, é usada apenas na função rand_insert_ships.
 
 rand_insert_ships -- cria e insere um dado numero de navios aleatoriamente no mapa.
 
-attack -- função 
+attack -- função principal do jogo, recebe coordenadas para atacar, verifica se existe algum navio nessa posição e altera o mapa dada a existencia ou não de um navio na posição, modifica também o estado do jogo permitindo que este termine quando não existem barcos.
+
+print_game -- imprime o tabuleiro de jogo no estado atual com todos os barcos revelados.
+
+print_secret_board -- imprime o tabuleiro apenas com água e posições já atingidas, é usada na função attack para dar uma referência visual ao jogador.
+
+erase_game -- limpa o mapa de jogo da memória e altera todos os apontadores para null, é apenas usada após terminar o ciclo de jogo.
+
+
 
 
 
