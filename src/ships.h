@@ -25,7 +25,6 @@ extern SHIP* Sigma;
 extern SHIP* Cruiser;
 extern SHIP* Destroyer;
 
-// criação do navio
 
 void create_ship(SHIP* newship,int orient,int size);
 void print_boat(SHIP* ship);
