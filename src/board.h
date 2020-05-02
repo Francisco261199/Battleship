@@ -22,16 +22,15 @@
 #define _HIT_CELL '2'
 #define _MISSED_SHOT '3'
 
-//Estruturas
+//Structs
 
 typedef struct{
   SHIP *ship;
   char shot;
-  //int shot_count;
 } CELL;
 
 
-// estrutura do jogo com 2 tabuleiros, tamanho do tabuleiro e estado do jogo ( nº de navios)
+/// both boards,state for each player(nº of boats remaining),size of map
 typedef struct{
     CELL **map1;
     CELL **map2;
@@ -40,7 +39,7 @@ typedef struct{
 } GAME;
 
 
-// funções de jogo
+// game functions
 
 GAME * init_board(int size);
 int verify_insert(int x,int y,SHIP* ship,CELL** map, int map_size);
