@@ -29,10 +29,10 @@ void LEARN_TO_PLAY(){
   mvprintw(3,2,"GAME OBJECTIVE:");
   attroff(A_BOLD|A_ITALIC);
   mvprintw(4,1," _______________________________________________________________________________________________________________________________________________________");
-  mvprintw(5,1,"|.The objective of Battleship is to try and sink all of the other player's ships before they sink all of your own.                                      |");
-  mvprintw(6,1,"|.All of the other player's ships are somewhere on their board. You try and hit them by calling out the coordinates of one of the squares on the board. |");
-  mvprintw(7,1,"|.Neither you nor the other player can see the eachother's board so you must try and guess where boats are.                                             |");
-  mvprintw(8,1,"|.If a player loses all their ships the game ends.                                                                                                      |");
+  mvprintw(5,1,"|.The objective of Battleship is to sink all of the enemy player's ships before they sink all of yours.                                                 |");
+  mvprintw(6,1,"|.All the other player's ships are somewhere on their board. You must hit them by calling out the coordinates of one of the squares on the board.       |");
+  mvprintw(7,1,"|.Neither you or the other player can see the eachother's board so you must guess where boats are.                                             |");
+  mvprintw(8,1,"|.The game ends when one player loses all their ships.                                                                                                      |");
   mvprintw(9,1,"|_______________________________________________________________________________________________________________________________________________________|");
   attroff(A_BOLD|A_ITALIC);
 }
@@ -44,21 +44,21 @@ void STARTING_GAME(){
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
   attron(A_NORMAL|A_BOLD|A_ITALIC);
-  mvprintw(3,2,"Starting a game:");
+  mvprintw(3,2,"Starting game:");
   attroff(A_BOLD|A_ITALIC);
   mvprintw(4,1," _____________________________________________________________________________________________________________________");
-  mvprintw(5,1,"|.Each player places a selected number ships somewhere on their board, or it chooses random selection.                |");
+  mvprintw(5,1,"|.After chosing a number of ships each player can place them manually or randomly on the board.                       |");
   mvprintw(6,1,"|.The ships can only be placed vertically or horizontally. Diagonal placement is not allowed.                         |");
-  mvprintw(7,1,"|.No part of a ship may hang off the edge of the board. Ships may not overlap. No ships may be placed on another ship.|");
-  mvprintw(8,1,"|.Once the guessing begins, the players may not move the ships.                                                       |");
+  mvprintw(7,1,"|.No part of a ship may hang off the edge of the board. Ships may not overlap.                                        |");
+  mvprintw(8,1,"|.Once the game begins, players may not move the ships.                                                               |");
   mvprintw(9,1,"|.There are 6 different ships: Pickaxe (9), Sigma (7), Carrier (5), Battleship (4), Cruiser (3), Destroyer (2).       |");
-  mvprintw(10,1,"|_____________________________________________________________________________________________________________________|");
+  mvprintw(10,1,"|____________________________________________________________________________________________________________________ |");
   attroff(A_BOLD|A_ITALIC);
 }
 
 int select_mode(){
   curs_set(0);
-  char *Options[]={".Random Insertion", ".Selected Insertion"};
+  char *Options[]={".Random Insertion", ".Manual Insertion"};
   int highlighted,choice;
   highlighted = choice = 0;
   start_color();
@@ -128,7 +128,7 @@ void get_number_boats(){
   start_color();
   init_pair(1,COLOR_CYAN,COLOR_BLACK);
   (void)attron(COLOR_PAIR(1));
-  mvprintw(20,1,"Now lets select number of boats for each type:");
+  mvprintw(20,1,"Select a number of boats from each type:");
   echo();
   while(TRUE){
     curs_set(1);
@@ -260,8 +260,8 @@ int Start_game(){
 
   echo();
   curs_set(1);
-  mvprintw(1,1,"So lets start the game.");
-  mvprintw(2,1,"Select size of board (between 20 to 40):");
+  mvprintw(1,1,"Starting Game");
+  mvprintw(2,1,"Select size of board (between 20 and 40):");
   scanw("%d",&map_size);
   //invalid map size number
   while(map_size<20 || map_size>40){
@@ -275,7 +275,7 @@ int Start_game(){
   //invalid number of boats
   while(n_boats<6 || n_boats>(map_size*map_size)/25){
     clear();
-    mvprintw(1,1,"Invalid number of boats. Insert new number:");
+    mvprintw(1,1,"Invalid number of ships. Insert new number:");
     scanw("%d",&n_boats);
   }
   clear();
