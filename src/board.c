@@ -53,9 +53,9 @@ void insert_ship(int x,int y,SHIP* ship,CELL** map, int map_size){
   if(check != ship->size){
     //if(check == 1) printf("Boat out of bounds!\n");
     printf("\033[1;31m");
-    printf("ERROR! You can't insert boat here!\n");
+    printf("ERROR! You can't insert the boat here!\n");
     printf("\033[1;33m");
-    printf("Please insert other position.\n");
+    printf("Please choose another position.\n");
     printf("X: "); scanf("%d",&x);
     printf("Y: "); scanf("%d",&y); printf("\n");
 
