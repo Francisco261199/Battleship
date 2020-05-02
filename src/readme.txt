@@ -16,6 +16,9 @@ Instalação(Linux):
 Desisntalar: 
 1-Correr o comando "make clean" na pasta de instalação.
 
+Controlos:
+Os menus de jogo são controlados com as setas do teclado.
+
 Como jogar:
 1-Depois de correr "./Battleship" selecionar a opção "1-Start Game";
 2-Ler as Regras e objetivos;
@@ -65,6 +68,26 @@ o estado do jogo é indicado por quantos navios o jogador tem restantes.
 
 
 Funções do menus.c:
+LEARN_TO_PLAY -- Imprime informações sobre os objetivos básicos do jogo.
+
+STARTING_GAME -- Imprime as regras de inserção no tabuleiro.
+
+Select_mode -- seleciona o modo de inserção (manual ou aleatorio).
+
+prints_ships -- Imprime uma representação do bitmap dos navios, o x representa o centro do navio.
+
+get_number_boats -- lê input do jogador referente ao numero de barcos e quantos barcos de cada tipo e armazena os no array n_for_each_boat;
+
+start_menu -- menu inicial de jogo , permite ao utilizador navegar para o inicio do jogo, creditos ou sair do jogo.
+
+start_game -- menu de inicio de jogo, recolhe o input referente ao tamanho do mapa,e permite aceder as regras e objetivos de jogo
+
+credits -- informações sobre a criação do jogo.
+
+leave -- sai do jogo.
+
+menu -- permite circular entre os menus do jogo.
+
 Funções do main.c:
 
 game -- função que junta todas as componentes do menus.c e board.c para criar o jogo em si, inicializa o jogo e entra num ciclo que permite aos jogadores atacar alternadamente até que todos os navios de um deles sejam destruidos, quando sai desse ciclo executa a função erase_game;
@@ -93,6 +116,18 @@ print_secret_board -- imprime o tabuleiro apenas com água e posições já atin
 erase_game -- limpa o mapa de jogo da memória e altera todos os apontadores para null, é apenas usada após terminar o ciclo de jogo.
 
 
+funções do Ships.c: 
+No Ships.c criamos as variaveis com a informação dos navios e atribuimos a cada navio um apontador.
+
+rotation_90 -- rotação de 90 graus.
+rotation_180 -- rotação de 180 graus.
+rotation_270 -- rotação de 270 graus.
+
+Todas as rotações são feitas por camadas em vez de por posições individuais por ser mais eficiente.
+
+create_ship -- recebendo uma estrutura ship "vazia" atribui-lhe um dos navios existente com base no tamanho e aplica as rotações se necessário.
+
+print_boat -- imprime o bitmap do navio.
 
 
 
