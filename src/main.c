@@ -24,7 +24,8 @@ void game(){
 
   if(rand_flag==1) rand_insert_ships(gameboard);
   else user_insert(gameboard);
-
+  
+  system("clear");
   printf("Boats inserted succsefully! When you're both ready press ENTER to start!\n");
   getchar();
 
