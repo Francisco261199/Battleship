@@ -31,8 +31,8 @@ void LEARN_TO_PLAY(){
   mvprintw(4,1," _______________________________________________________________________________________________________________________________________________________");
   mvprintw(5,1,"|.The objective of Battleship is to sink all of the enemy player's ships before they sink all of yours.                                                 |");
   mvprintw(6,1,"|.All the other player's ships are somewhere on their board. You must hit them by calling out the coordinates of one of the squares on the board.       |");
-  mvprintw(7,1,"|.Neither you or the other player can see the eachother's board so you must guess where boats are.                                             |");
-  mvprintw(8,1,"|.The game ends when one player loses all their ships.                                                                                                      |");
+  mvprintw(7,1,"|.Neither you or the other player can see the eachother's board so you must guess where boats are.                                                      |");
+  mvprintw(8,1,"|.The game ends when one player loses all their ships.                                                                                                  |");
   mvprintw(9,1,"|_______________________________________________________________________________________________________________________________________________________|");
   attroff(A_BOLD|A_ITALIC);
 }
