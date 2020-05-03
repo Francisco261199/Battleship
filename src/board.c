@@ -200,7 +200,7 @@ int attack(int x,int y, CELL **map,int size){
     do{
       printf("\033[1;31m");
       printf("Out of bounds. Insert new position:\n");
-      printf("\033[0m");
+      printf("\033[1;36m");
       printf("X: ");x = read_buffer();
       printf("Y: ");y = read_buffer();
       printf("\n");
