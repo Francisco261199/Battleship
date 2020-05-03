@@ -129,7 +129,8 @@ create_ship -- recebendo uma estrutura ship "vazia" atribui-lhe um dos navios ex
 
 print_boat -- imprime o bitmap do navio.
 
-
+read_buffer -- lê input de forma a evitar erros relacionados com tipos diferentes.
+                    Ex: é pedido um inteiro e o jogador escreve uma string.
 
 
 
