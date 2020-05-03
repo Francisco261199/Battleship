@@ -3,7 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
+#include <ncurses.h>
 #include "ships.h"
+#include <time.h>
 
 /*MACROS*/
 
@@ -27,7 +30,7 @@ typedef struct{
 } CELL;
 
 
-/// both boards,state for each player(nº of boats remaining),size of map
+// both boards,state for each player(nº of boats remaining),size of map
 typedef struct{
     CELL **map1;
     CELL **map2;
@@ -51,9 +54,10 @@ int attack(int x,int y, CELL **map,int size);
 
 void print_game(CELL** map,int size);
 
+int read_buffer();
+
 void print_secret_board(CELL** map, int size);
 
 GAME* erase_game(GAME* board);
 
 #endif
-
