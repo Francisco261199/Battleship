@@ -42,13 +42,17 @@ QD_NODE * get_quadrant(int x,int y, int l, QD_NODE* q){
     else return get_quadrant(x,y,l,q->node.quadrants[0]);
   }
 }
+
+
 POINT make_point(int x,int y){    //constrói o ponto (x,y) e o retorna;
+  
   POINT p;
-   p.x = x;
-   p.y=y;
+  p.x = x;
+  p.y = y;
   
   return p;
 }
+
 /*POINT add_point(POINT p, POINT q) //retorna a adição de p a q;
 
 int isEqual(POINT p,POINT q) //verificar se as coordenadas coincidem;
