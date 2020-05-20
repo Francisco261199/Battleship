@@ -27,8 +27,9 @@ typedef struct QD_Node_ {
 } QD_NODE;
 
 
-//internal node [‘NW’,‘NE’,‘SW’,‘SE’]
+//quadrants [‘NW’,‘NE’,‘SW’,‘SE’]
 QD_NODE * get_quadrant(int x,int y, int l, QD_NODE* q){
+  if(q->type == QDLEAF) return q;
   l/=2;
   if(x>=l){
     if(y>=l) return get_quadrant(x,y,l,q->node.quadrants[3]);
@@ -40,7 +41,6 @@ QD_NODE * get_quadrant(int x,int y, int l, QD_NODE* q){
     //y<l
     else return get_quadrant(x,y,l,q->node.quadrants[0]);
   }
-  return NULL;
 }
 /*POINT make_point(int x,int y)  //constrói o ponto (x,y) e o retorna;
 
