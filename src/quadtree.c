@@ -51,57 +51,7 @@ QD_NODE * get_subdivision(int x,int y, int l, QD_NODE* root){
   }
 }
 
-//divide sections in 4 sub-sections until 2 points dont match the same division
-void divide_insert(POINT* p1,POINT* p2,QD_NODE* root, int x, int y, int l){
-  QD_NODE* q1 = (QD_NODE*) malloc (sizeof(QD_NODE));
-  QD_NODE* q2 = (QD_NODE*) malloc (sizeof(QD_NODE));
-  do{
-    l/=2;
-
-    q1 = get_subdivision(x,y,l,root);
-    q2 = get_subdivision(x,y,l,root);
-  }while(q1 == q2);
-  free(q1);
-  free(q2);
-}
-
-
-
-/*int node_insert(QD_NODE* root,QD_NODE* p,int l){
-  //POINT* p1 = make_point(x,y);
-  //tree is empty
-  if(root == NULL){
-    root->node.leaf.p = make_point(x,y);
-    root->nodes_inside += 1;
-    return 1;
-  }
-  //at node leaf to insert
-  else if(root->type == QDLEAF){
-    if(root->node.leaf.p == NULL){
-      root->node.leaf.p = p1;
-      printf("Valid insert.(%d,%d)\n",root->node.leaf.p->x,root->node.leaf.p->y);
-      return 1;
-    }
-    else{ //create sub-tree divisions
-      divide_insert(p1,root->node.leaf.p,root,x,y,l);
-      root->type = QDNODE;
-      root->nodes_inside += 1;
-    }
-  }
-
-
-  return 0;
-}*/
-
-/*POINT make_point(int x,int y)  //constrói o ponto (x,y) e o retorna;
-
-POINT add_point(POINT p, POINT q) //retorna a adição de p a q;
-
-int isEqual(POINT p,POINT q) //verificar se as coordenadas coincidem;
-
-inSquare(POINT p, POINT corner, int side) //verificar se p está no quadrado definido por (corner,side)
-*/
-
+//create node that is empty
 QD_NODE* create_node(){
     QD_NODE * new_node = (QD_NODE*)malloc(sizeof(QD_NODE));
 
@@ -112,7 +62,7 @@ QD_NODE* create_node(){
     return new_node;
 }
 
-
+//expand tree(it is going to have atleast 2 nodes with data)
 void expand_tree(QD_NODE* root){
   root->type = QDNODE;
   root->node.quadrants[0] = create_node();
@@ -128,19 +78,90 @@ void expand_tree(QD_NODE* root){
 }
 
 
+//divide sections in 4 sub-sections until 2 points dont match the same division
+void divide_insert(QD_NODE* daddy, QD_NODE* copy, QD_NODE* n, int l){
+  QD_NODE* q1 = (QD_NODE*) malloc(sizeof(QD_NODE));
+  QD_NODE* q2 = (QD_NODE*) malloc(sizeof(QD_NODE));
+  do{
+    expand_tree(daddy);
+    l/=2;
+    q1 = get_subdivision(copy->node.leaf.p->x,copy->node.leaf.p->y,l,daddy);
+    q2 = get_subdivision(n->node.leaf.p->x,n->node.leaf.p->y,l,daddy);
+  }while(q1 == q2);
+  *q1 = *copy;
+  *q2 = *n;
+  free(q1);
+  free(q2);
+  q1 = NULL;
+  q2 = NULL;
+}
+
+
+
+int node_insert(QD_NODE* daddy,QD_NODE* n,int l){
+
+  if(daddy == NULL){ //tree is empty
+    printf("Error. Node not found");
+    return 0;
+  }
+
+  if(daddy->type == QDLEAF){ //at node leaf to insert
+    //no node inside leaf(insert)
+    if(daddy->node.leaf.p == NULL){
+      *daddy = *n;
+      free(n);
+      n = NULL;
+
+      daddy->nodes_inside = 1;
+      printf("Valid insert.(%d,%d)\n",daddy->node.leaf.p->x,daddy->node.leaf.p->y);
+      return 1;
+    }
+    else{ //create sub-tree divisions
+      QD_NODE* copy =(QD_NODE*) malloc(sizeof(QD_NODE));
+      *copy = *daddy;
+      divide_insert(daddy,copy,n,l);
+      daddy->nodes_inside += 1;
+      free(n);
+      free(copy);
+      n = NULL;
+      copy = NULL;
+      return 1;
+    }
+  }
+  else{
+    QD_NODE* aux = (QD_NODE*) malloc(sizeof(QD_NODE));
+    aux = get_subdivision(n->node.leaf.p->x, n->node.leaf.p->y, l, daddy);
+    l/=2;
+    node_insert(aux,n,l);
+    free(aux);
+    free(n);
+    aux = NULL;
+    n = NULL;
+    return 1;
+  }
+
+  return -1;
+}
+
+/*POINT make_point(int x,int y)  //constrói o ponto (x,y) e o retorna;
+
+POINT add_point(POINT p, POINT q) //retorna a adição de p a q;
+
+int isEqual(POINT p,POINT q) //verificar se as coordenadas coincidem;
+
+inSquare(POINT p, POINT corner, int side) //verificar se p está no quadrado definido por (corner,side)
+*/
+
 int main(){
   int l = 20;
-  POINT* p = make_point(x,y);
+  POINT* p = make_point(3,1);
   SHIP* boat1 =(SHIP*) malloc (sizeof(SHIP));
   create_ship(boat1,2,7);
 
+  QD_NODE* root = create_node();
   QD_NODE* node = get_subdivision(p->x,p->y,l,root);
-  node_insert(node,p,l);
-  
-  //QTNode** map = (QTNode**) malloc(QT);
-  //int
-  //QTree* qtree = (QTree*) malloc(sizeof(QTree));
-   //*qtree = *inicial;
+  node_insert(root,node,l);
+
 
   return 0;
 }
