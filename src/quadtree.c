@@ -27,15 +27,15 @@ typedef struct QD_Node_ {
   } node;
 } QD_NODE;
 
-POINT make_point(int x,int y){    //constrói o ponto (x,y) e o retorna;
-  POINT p;
-  p.x = x;
-  p.y = y;
+POINT * make_point(int x,int y){    //constrói o ponto (x,y) e o retorna;
+  POINT* p = (POINT*) malloc (sizeof(POINT));
+  p->x = x;
+  p->y = y;
   return p;
 }
 //quadrants [‘NW’,‘NE’,‘SW’,‘SE’]
 QD_NODE * get_subdivision(int x,int y, int l, QD_NODE* root){
-  if(root->type == QDLEAF) return q;
+  if(root->type == QDLEAF) return root;
   l/=2;
   if(x>=l){
     if(y>=l) return get_subdivision(x,y,l,root->node.quadrants[3]);
@@ -50,12 +50,12 @@ QD_NODE * get_subdivision(int x,int y, int l, QD_NODE* root){
 }
 
 //divide sections in 4 sub-sections until 2 points dont match the same division
-void divide_insert(POINT p1,POINT p2,QD_NODE* root, int x, int y, int l){
+void divide_insert(POINT* p1,POINT* p2,QD_NODE* root, int x, int y, int l){
   QD_NODE* q1 = (QD_NODE*) malloc (sizeof(QD_NODE));
   QD_NODE* q2 = (QD_NODE*) malloc (sizeof(QD_NODE));
   do{
     l/=2;
-    
+
     q1 = get_subdivision(x,y,l,root);
     q2 = get_subdivision(x,y,l,root);
   }while(q1 == q2);
@@ -65,23 +65,28 @@ void divide_insert(POINT p1,POINT p2,QD_NODE* root, int x, int y, int l){
 
 
 
-int node_insert(POINT p,QD_NODE* root,int x,int y,int l){
+int node_insert(QD_NODE* root,int x,int y,int l){
+  POINT* p1 = make_point(x,y);
   //tree is empty
-  if(root == NULL){r=p;return 1;}
+  if(root == NULL){
+    root->node.leaf.p = make_point(x,y);
+    root->nodes_inside += 1;
+    return 1;
+  }
   //at node leaf to insert
   else if(root->type == QDLEAF){
-    if(root->node.leaf->p == null){
-      root->node.leaf->p.x = p.x;
-      root->node.leaf->p.y = p.y;
-      printf("Valid insert.(%d,%d)\n",x,y);
+    if(root->node.leaf.p == NULL){
+      root->node.leaf.p = p1;
+      printf("Valid insert.(%d,%d)\n",root->node.leaf.p->x,root->node.leaf.p->y);
       return 1;
     }
     else{ //create sub-tree divisions
-      divide_insert(p,root->node.leaf->p,root,x,y,l);
+      divide_insert(p1,root->node.leaf.p,root,x,y,l);
       root->type = QDNODE;
       root->nodes_inside += 1;
     }
   }
+
 
   return 0;
 }
