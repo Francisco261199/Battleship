@@ -91,13 +91,14 @@ int node_insert(QD_NODE* root,int x,int y,int l){
 
   return 0;
 }
-void create_node(QD_NODE* new_node,POINT *p,SHIP* newship){
+QD_NODE* create_node(){
+    QD_NODE * new_node = (QD_NODE*)malloc(sizeof(QD_NODE));
 
     new_node->type = LEAF;
     new_node->nodes_inside = 0;
-    new_node->node.leaf.p = p;
-    new_node->node.leaf.ship = newship;
-
+    new_node->node.leaf.p = NULL;
+    new_node->node.leaf.ship = NULL;
+    return new_node;
 }
 
 /*POINT make_point(int x,int y)  //constrói o ponto (x,y) e o retorna;
@@ -108,13 +109,7 @@ inSquare(POINT p, POINT corner, int side) //verificar se p está no quadrado def
 
 
 int main(){
-    POINT* p = make_point(1,3);
-    SHIP *newship=(SHIP*) malloc(sizeof(SHIP)) ;
-    create_ship(newship,0,4);
 
-    QD_NODE * new = (QD_NODE*) malloc(sizeof(QD_NODE));
-    create_node(new,p,newship);
-    printf("%d %d\n",new->node.leaf.p->x,new->node.leaf.p->y);
   //QTNode** map = (QTNode**) malloc(QT);
   //int
   //QTree* qtree = (QTree*) malloc(sizeof(QTree));
