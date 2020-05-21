@@ -1,3 +1,4 @@
+
 #include<stdio.h>
 #include<stdlib.h>
 //#include "quadtree.h"
@@ -90,13 +91,20 @@ int node_insert(QD_NODE* root,int x,int y,int l){
 
   return 0;
 }
+QD_NODE * create_node(){
+    QD_NODE * new_node;
+
+    new_node->type = LEAF;
+    new_node->nodes_inside = 0;
+    new_node->node.leaf.p = NULL;
+    new_node->node.leaf.ship = NULL;
+
+    return new_node;
+}
 
 /*POINT make_point(int x,int y)  //constrói o ponto (x,y) e o retorna;
-
 POINT add_point(POINT p, POINT q) //retorna a adição de p a q;
-
 int isEqual(POINT p,POINT q) //verificar se as coordenadas coincidem;
-
 inSquare(POINT p, POINT corner, int side) //verificar se p está no quadrado definido por (corner,side)
 */
 
