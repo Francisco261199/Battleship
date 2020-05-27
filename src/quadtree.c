@@ -100,8 +100,8 @@ void expand_tree(QD_NODE* root){
 
 //divide sections in 4 sub-sections until 2 points dont match the same division
 void divide_insert(QD_NODE* root, QD_NODE* copy, QD_NODE* n, int l){
-  QD_NODE* q1 = (QD_NODE*) malloc(sizeof(QD_NODE));
-  QD_NODE* q2 = (QD_NODE*) malloc(sizeof(QD_NODE));
+  QD_NODE* q1 = create_node(root->level);
+  QD_NODE* q2 = create_node(root->level);
   q2 = q1 = root;
   l/=2;
   while(q1 == q2){
@@ -121,6 +121,7 @@ void divide_insert(QD_NODE* root, QD_NODE* copy, QD_NODE* n, int l){
   //printf("ddd\n");
   *q1->node.leaf.ship = *copy->node.leaf.ship;
   *q1->node.leaf.p = *copy->node.leaf.p;
+
   //*q1->node.leaf.p->y = *copy->node.leaf.p->y;
   *q2->node.leaf.ship = *n->node.leaf.ship;
   *q2->node.leaf.p = *n->node.leaf.p;
@@ -159,6 +160,8 @@ int node_insert(QD_NODE* root,QD_NODE* n,int l){
       QD_NODE* copy = create_node(root->level);
       *copy->node.leaf.ship = *root->node.leaf.ship;
       *copy->node.leaf.p = *root->node.leaf.p;
+      copy->level = root->level;
+      printf("2-level:%d\n",l);
       //print_boat(n->node.leaf.ship);
       divide_insert(root,copy,n,l);
       //printf("p(%d,%d)\n",n->node.leaf.p->x,n->node.leaf.p->y);
@@ -173,9 +176,9 @@ int node_insert(QD_NODE* root,QD_NODE* n,int l){
   }
   else{ //not at leaf node
     //printf("flag2\n");
-    QD_NODE* aux = (QD_NODE*) malloc(sizeof(QD_NODE));
+    QD_NODE* aux = create_node(9);
     aux = get_subdivision(n->node.leaf.p->x, n->node.leaf.p->y,l/2,l/2,l/2, root);
-    l = aux->level;
+    l = get_parent(aux)->level;
     printf("level:%d\n",l);
     node_insert(aux,n,l);
     //free(aux);
@@ -224,7 +227,7 @@ int node_delete(QD_NODE* root, int x, int y, int l){
   printf("flag2:\n");
   //printf("l(%d,%d)\n",x,y);
   //locate node where point(x,y) belongs
-  QD_NODE* e = (QD_NODE*) malloc(sizeof(QD_NODE));
+  QD_NODE* e = create_node(9);
   printf("l(%d,%d)\n",x,y);
   e = get_subdivision(x,y,(l/2),(l/2),(l/2),root);
 
@@ -240,7 +243,7 @@ int node_delete(QD_NODE* root, int x, int y, int l){
     return -1;
   }
 
-  QD_NODE* e_parent = (QD_NODE*) malloc(sizeof(QD_NODE));
+  QD_NODE* e_parent = create_node(e->level*4);
   e_parent = get_parent(e);
 
   printf("%d\n",e_parent->type);
@@ -271,7 +274,11 @@ void print_tree(QD_NODE* root, int l){
   if(root->type == QDLEAF){
     return;
   }
-  printf("1:%p,type:%d\n2:%p,type:%d\n3:%p,type:%d\n4:%p,type:%d\n",root->node.quadrants[0],root->node.quadrants[0]->type,root->node.quadrants[1],root->node.quadrants[1]->type,root->node.quadrants[2],root->node.quadrants[2]->type,root->node.quadrants[3],root->node.quadrants[3]->type);
+  printf("1:%p,type:%d, level = %d\n2:%p,type:%d, level = %d\n3:%p,type:%d, level = %d\n4:%p,type:%d, level = %d\n"
+  ,root->node.quadrants[0],root->node.quadrants[0]->type,root->node.quadrants[0]->level
+  ,root->node.quadrants[1],root->node.quadrants[1]->type,root->node.quadrants[1]->level
+  ,root->node.quadrants[2],root->node.quadrants[2]->type,root->node.quadrants[2]->level
+  ,root->node.quadrants[3],root->node.quadrants[3]->type,root->node.quadrants[3]->level);
   printf("_______\n");
   printf("tree0\n");
   print_tree(root->node.quadrants[0],l/2);
@@ -312,8 +319,10 @@ int main(){
   d1->node.leaf.ship = boat3;
 
   node_insert(root,d,l);
-
+  printf("1\n");
+  print_tree(root,l);
   node_insert(root,d1,l);
+  printf("2\n");
   print_tree(root,l);
   printf("where to insert:\n");
   //printf("%p\n",root->node.quadrants[0]->node.quadrants[2]->node.quadrants[2]);
