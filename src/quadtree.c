@@ -1,4 +1,3 @@
-
 #include<stdio.h>
 #include<stdlib.h>
 //#include "quadtree.h"
@@ -43,11 +42,11 @@ void print_tree(QD_NODE* root, int l){
   if(root->type == QDLEAF){
     return;
   }
-  printf("1:%p,type:%d, level = %f, cx = %f , cy = %f\n2:%p,type:%d, level = %f, cx = %f , cy = %f\n3:%p,type:%d, level = %f, cx = %f , cy = %f\n4:%p,type:%d, level = %f, cx = %f , cy = %f\n"
-  ,root->node.quadrants[0],root->node.quadrants[0]->type,root->node.quadrants[0]->level,root->node.quadrants[0]->cx,root->node.quadrants[0]->cy
-  ,root->node.quadrants[1],root->node.quadrants[1]->type,root->node.quadrants[1]->level,root->node.quadrants[1]->cx,root->node.quadrants[1]->cy
-  ,root->node.quadrants[2],root->node.quadrants[2]->type,root->node.quadrants[2]->level,root->node.quadrants[2]->cx,root->node.quadrants[2]->cy
-  ,root->node.quadrants[3],root->node.quadrants[3]->type,root->node.quadrants[3]->level,root->node.quadrants[3]->cx,root->node.quadrants[3]->cy);
+  printf("1:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p \n2:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p \n3:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p \n4:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p \n"
+  ,root->node.quadrants[0],root->node.quadrants[0]->type,root->node.quadrants[0]->level,root->node.quadrants[0]->cx,root->node.quadrants[0]->cy,root->node.quadrants[0]->parent
+  ,root->node.quadrants[1],root->node.quadrants[1]->type,root->node.quadrants[1]->level,root->node.quadrants[1]->cx,root->node.quadrants[1]->cy,root->node.quadrants[1]->parent
+  ,root->node.quadrants[2],root->node.quadrants[2]->type,root->node.quadrants[2]->level,root->node.quadrants[2]->cx,root->node.quadrants[2]->cy,root->node.quadrants[2]->parent
+  ,root->node.quadrants[3],root->node.quadrants[3]->type,root->node.quadrants[3]->level,root->node.quadrants[3]->cx,root->node.quadrants[3]->cy,root->node.quadrants[3]->parent);
   printf("_______\n");
   printf("tree0\n");
   print_tree(root->node.quadrants[0],l/2);
@@ -75,12 +74,17 @@ QD_NODE* create_node(float level){
     new_node->parent = (QD_NODE*) malloc(sizeof(QD_NODE));
     new_node->node.leaf.p = (POINT*) malloc(sizeof(POINT));
     new_node->node.leaf.ship = (SHIP*) malloc(sizeof(SHIP));
+    new_node->node.leaf.p->x = -1;
+    new_node->node.leaf.p->y = -1;
+    //new_node->node.leaf.p = NULL;
+    //new_node->node.leaf.ship = NULL;
+
     return new_node;
 }
 
 //expand tree(it is going to have atleast 2 nodes with data)
 void expand_tree(QD_NODE* root){
-  printf("root.cx.cy(%f,%f)\n",root->cx,root->cy);
+  //printf("root.cx.cy(%f,%f)\n",root->cx,root->cy);
   root->type = QDNODE;
   root->nodes_inside = 2;
   root->node.quadrants[0] = create_node(((root->level)/2.0));
@@ -113,7 +117,7 @@ void expand_tree(QD_NODE* root){
 }
 
 
-QD_NODE* get_next(int x,int y,float l,QD_NODE* save,QD_NODE* root){
+QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
   //printf("rootcx,cy(%f,%f)\n",root->cx,root->cy);
   if(x<=root->cx){
     if(y<=root->cy){
@@ -122,7 +126,7 @@ QD_NODE* get_next(int x,int y,float l,QD_NODE* save,QD_NODE* root){
       save->cy -= save->level/2.0;
       save->level/=2;
       save->parent = root;
-      printf("type:%d\n", root->type);
+      //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[0]);
 
@@ -136,7 +140,7 @@ QD_NODE* get_next(int x,int y,float l,QD_NODE* save,QD_NODE* root){
       save->cy += save->level/2.0;
       save->level/=2;
       save->parent = root;
-      printf("type:%d\n", root->type);
+      //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[1]);
 
@@ -151,7 +155,7 @@ QD_NODE* get_next(int x,int y,float l,QD_NODE* save,QD_NODE* root){
       save->cy -= save->level/2.0;
       save->level/=2;
       save->parent = root;
-      printf("type:%d\n", root->type);
+      //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[2]);
 
@@ -160,12 +164,11 @@ QD_NODE* get_next(int x,int y,float l,QD_NODE* save,QD_NODE* root){
    }
     //y>l
     else{
-      //printf("root.cx,root.cy(%.3f,%.3f)\n",save->cx,save->cy);
       save->cx += save->level/2.0;
       save->cy += save->level/2.0;
       save->level/=2;
       save->parent = root;
-      printf("type:%d\n", root->type);
+      //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[3]);
 
@@ -178,14 +181,12 @@ QD_NODE* get_next(int x,int y,float l,QD_NODE* save,QD_NODE* root){
 //quadrants [‘NW’,‘NE’,‘SW’,‘SE’] x=lines y=cols
 QD_NODE * get_subdivision(int x,int y,float cx,float cy,float l,QD_NODE* root){
   //printf("before.l:%d\n",l);
-  printf("type:%d\n", root->type);
+  //printf("type:%d\n", root->type);
   printf("x,y:(%d,%d)\n",x,y);
   printf("id:%p\n",root);
-  printf("cx,cy:(%.3f,%.3f),root.cx,root.cy(%.3f,%.3f)\n",cx,cy,root->cx,root->cy);
-  printf("l:%f\n",l);
-  //printf("address:%p\n",root);
+  //printf("cx,cy:(%.3f,%.3f),root.cx,root.cy(%.3f,%.3f)\n",cx,cy,root->cx,root->cy);
+  //printf("l:%f\n",l);
 
-  //root->level/=2;
   if(root->type == QDLEAF) return root;
   if(root == NULL){
     printf("Not found!\n");
@@ -193,34 +194,14 @@ QD_NODE * get_subdivision(int x,int y,float cx,float cy,float l,QD_NODE* root){
   }
 
   if(x<=cx){
-    if(y<=cy){
-      //root->cx = cx-l/2.0;
-      //root->cy = cy-l/2.0;
-      //root->level/=2;
-      return get_subdivision(x,y,cx-l/2.0,cy-l/2.0,l/2.0,root->node.quadrants[0]);
-     }
+    if(y<=cy) return get_subdivision(x,y,cx-l/2.0,cy-l/2.0,l/2.0,root->node.quadrants[0]);
     //y>l
-    else{
-      //root->cx = cx-l/2.0;
-      //root->cy = cy+l/2.0;
-      //root->level/=2;
-      return get_subdivision(x,y,cx-l/2.0,cy+l/2.0,l/2.0,root->node.quadrants[1]);
-   }
+    else return get_subdivision(x,y,cx-l/2.0,cy+l/2.0,l/2.0,root->node.quadrants[1]);
   }
   else{ //x>l
-    if(y<=cy){
-      //root->cx = cx+l/2.0;
-      //root->cy = cy-l/2.0;
-      //root->level/=2;
-      return get_subdivision(x,y,cx+l/2.0,cy-l/2.0,l/2.0,root->node.quadrants[2]);
-   }
+    if(y<=cy) return get_subdivision(x,y,cx+l/2.0,cy-l/2.0,l/2.0,root->node.quadrants[2]);
     //y>l
-    else{
-      //root->cx = cx+l/2.0;
-      //root->cy = cy+l/2.0;
-      //root->level/=2;
-      return get_subdivision(x,y,cx+l/2.0,cy+l/2.0,l/2.0,root->node.quadrants[3]);
-     }
+    else return get_subdivision(x,y,cx+l/2.0,cy+l/2.0,l/2.0,root->node.quadrants[3]);
   }
   return NULL;
 }
@@ -229,19 +210,18 @@ QD_NODE * get_subdivision(int x,int y,float cx,float cy,float l,QD_NODE* root){
 void divide_insert(QD_NODE* root, QD_NODE* copy, QD_NODE* n){
   QD_NODE* q1 = create_node(root->level);
   QD_NODE* q2 = create_node(root->level);
-  //float l = root->level;
   q2 = q1 = root;
-  float l = root->level;
-  printf("--q1.level=%f, q2.level=%f--\n",copy->level,n->level);
-  printf("--q1.cx.cy(%f,%f)--\n",copy->cx,copy->cy);
+
+  //printf("--q1.level=%f, q2.level=%f--\n",copy->level,n->level);
+  //printf("--q1.cx.cy(%f,%f)--\n",copy->cx,copy->cy);
   while(1){
     expand_tree(q1);
 
-    q1 = get_next(copy->node.leaf.p->x,copy->node.leaf.p->y,l,copy,q1);
+    q1 = get_next(copy->node.leaf.p->x,copy->node.leaf.p->y,copy,q1);
     //  printf("q1:%p\n",q1);
     printf("-------------\n");
 
-    q2 = get_next(n->node.leaf.p->x,n->node.leaf.p->y,l,n,q2);
+    q2 = get_next(n->node.leaf.p->x,n->node.leaf.p->y,n,q2);
     //  printf("q2:%p\n",q2);
     printf("-------------\n");
 
@@ -271,19 +251,19 @@ int node_insert(QD_NODE* root,QD_NODE* n){
   if(root->type == QDLEAF){ //at node leaf to insert
     //printf("flag1\n");
     //no node inside leaf(insert)
-    if(root->node.leaf.p == NULL){
-      printf("flag1.1\n");
+    if(root->node.leaf.p->x == -1){
+      //printf("flag1.1\n");
       *root = *n;
       //n = root;
       //free(n);
       //n = NULL;
       root->parent = get_parent(root);
       root->nodes_inside = 1;
-      printf("Valid insert.(%d,%d)\n",root->node.leaf.p->x,root->node.leaf.p->y);
+      printf("Valid insert.(%d,%d),p:%p\n",root->node.leaf.p->x,root->node.leaf.p->y,root);
       return 1;
     }
     else{ //create sub-tree divisions
-      printf("flag1.2\n");
+      //printf("flag1.2\n");
       QD_NODE* copy = create_node(root->level/2);
       *copy->node.leaf.ship = *root->node.leaf.ship;
       *copy->node.leaf.p = *root->node.leaf.p;
@@ -295,13 +275,13 @@ int node_insert(QD_NODE* root,QD_NODE* n){
     }
   }
   else{ //not at leaf node
-    printf("flag2\n");
+    //printf("flag2\n");
     QD_NODE* aux = create_node(19.0);
     aux = get_subdivision(n->node.leaf.p->x, n->node.leaf.p->y,root->level/2.0,root->level/2.0,root->level/2.0, root);
     n->cx = aux->cx;
     n->cy = aux->cy;
     n->level = aux->level;
-    printf("LEVEL:%f\n",aux->level);
+    //printf("LEVEL:%f\n",aux->level);
     node_insert(aux,n);
     //free(aux);
     //aux = NULL;
@@ -398,6 +378,8 @@ int main(){
   POINT* p1 = make_point(7,3);
   POINT* p2 = make_point(7,4);
   POINT* p3 = make_point(7,5);
+  POINT* p4 = make_point(7,6);
+
 
   SHIP* boat =(SHIP*) malloc (sizeof(SHIP));
   create_ship(boat,2,7);
@@ -407,7 +389,8 @@ int main(){
   create_ship(boat2,1,9);
   SHIP* boat3 =(SHIP*) malloc (sizeof(SHIP));
   create_ship(boat3,1,9);
-
+  SHIP* boat4 =(SHIP*) malloc (sizeof(SHIP));
+  create_ship(boat4,1,9);
 
   QD_NODE* root = create_node(l);
   root->node.leaf.p = p;
@@ -428,6 +411,10 @@ int main(){
   d2->node.leaf.p = p3;
   d2->node.leaf.ship = boat3;
 
+  QD_NODE* d3 = create_node(l);
+  d3->node.leaf.p = p4;
+  d3->node.leaf.ship = boat4;
+
   node_insert(root,d);
   print_tree(root,l);
   printf("END.LLL.%d\n",l);
@@ -440,55 +427,11 @@ int main(){
   print_tree(root,l);
   printf("END.LLL.%d\n",l);
 
+  node_insert(root,d3);
+  print_tree(root,l);
+  printf("END.LLL.%d\n",l);
+
   printf("where to insert:\n");
 
   return 0;
 }
-
-/*print boats
-printf("(%d,%d)\n",root->node.quadrants[0]->node.quadrants[0]->node.leaf.p->x,root->node.quadrants[0]->node.quadrants[0]->node.leaf.p->y);
-print_boat(root->node.quadrants[0]->node.quadrants[2]->node.leaf.ship);
-printf("(%d,%d)\n",root->node.quadrants[0]->node.quadrants[2]->node.leaf.p->x,root->node.quadrants[0]->node.quadrants[2]->node.leaf.p->y);
-print_boat(root->node.quadrants[0]->node.quadrants[0]->node.leaf.ship);*/
-
-/*print tree
-printf("Level1\n");
-printf("%p\n",root->node.quadrants[0]);
-printf("%p\n",root->node.quadrants[1]);
-printf("%p\n",root->node.quadrants[2]);
-printf("%p\n",root->node.quadrants[3]);
-printf("Level2\n");
-printf("%p\n",root->node.quadrants[0]->node.quadrants[0]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[1]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[2]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[3]);
-printf("%p\n",root->node.quadrants[1]->node.quadrants[0]);
-printf("%p\n",root->node.quadrants[1]->node.quadrants[1]);
-printf("%p\n",root->node.quadrants[1]->node.quadrants[2]);
-printf("%p\n",root->node.quadrants[1]->node.quadrants[3]);
-printf("%p\n",root->node.quadrants[2]->node.quadrants[0]);
-printf("%p\n",root->node.quadrants[2]->node.quadrants[1]);
-printf("%p\n",root->node.quadrants[2]->node.quadrants[2]);
-printf("%p\n",root->node.quadrants[2]->node.quadrants[3]);
-printf("%p\n",root->node.quadrants[3]->node.quadrants[0]);
-printf("%p\n",root->node.quadrants[3]->node.quadrants[1]);
-printf("%p\n",root->node.quadrants[3]->node.quadrants[2]);
-printf("%p\n",root->node.quadrants[3]->node.quadrants[3]);
-printf("Level 3\n");
-printf("%p\n",root->node.quadrants[0]->node.quadrants[0]->node.quadrants[0]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[0]->node.quadrants[1]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[0]->node.quadrants[2]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[0]->node.quadrants[3]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[1]->node.quadrants[0]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[1]->node.quadrants[1]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[1]->node.quadrants[2]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[1]->node.quadrants[3]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[2]->node.quadrants[0]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[2]->node.quadrants[1]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[2]->node.quadrants[2]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[2]->node.quadrants[3]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[3]->node.quadrants[0]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[3]->node.quadrants[1]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[3]->node.quadrants[2]);
-printf("%p\n",root->node.quadrants[0]->node.quadrants[3]->node.quadrants[3]);
-*/
