@@ -3,18 +3,11 @@
 //#include "quadtree.h"
 #include "ships.h"
 
-//Node identifiers
-#define NON_LEAF -1
-#define LEAF 1
-#define EMPTY 2
-#define NOT_EMPTY 3
-
 typedef struct POINT{
   int x,y;
 }POINT;
 
 typedef enum { QDNODE, QDLEAF} QD_TNODE;
-//struct QD_Node_;
 
 typedef struct QD_Node_ {
   QD_TNODE  type;
@@ -42,11 +35,12 @@ void print_tree(QD_NODE* root, int l){
   if(root->type == QDLEAF){
     return;
   }
-  printf("1:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p \n2:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p \n3:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p \n4:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p \n"
-  ,root->node.quadrants[0],root->node.quadrants[0]->type,root->node.quadrants[0]->level,root->node.quadrants[0]->cx,root->node.quadrants[0]->cy,root->node.quadrants[0]->parent
-  ,root->node.quadrants[1],root->node.quadrants[1]->type,root->node.quadrants[1]->level,root->node.quadrants[1]->cx,root->node.quadrants[1]->cy,root->node.quadrants[1]->parent
-  ,root->node.quadrants[2],root->node.quadrants[2]->type,root->node.quadrants[2]->level,root->node.quadrants[2]->cx,root->node.quadrants[2]->cy,root->node.quadrants[2]->parent
-  ,root->node.quadrants[3],root->node.quadrants[3]->type,root->node.quadrants[3]->level,root->node.quadrants[3]->cx,root->node.quadrants[3]->cy,root->node.quadrants[3]->parent);
+  printf("1:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p , nodes inside:%d\n2:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p , nodes inside:%d\n3:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p , nodes inside:%d\n4:%p,type:%d, level = %f, cx = %f , cy = %f, parent : %p , nodes inside:%d\n"
+  ,root->node.quadrants[0],root->node.quadrants[0]->type,root->node.quadrants[0]->level,root->node.quadrants[0]->cx,root->node.quadrants[0]->cy,root->node.quadrants[0]->parent,root->node.quadrants[0]->nodes_inside
+  ,root->node.quadrants[1],root->node.quadrants[1]->type,root->node.quadrants[1]->level,root->node.quadrants[1]->cx,root->node.quadrants[1]->cy,root->node.quadrants[1]->parent,root->node.quadrants[1]->nodes_inside
+  ,root->node.quadrants[2],root->node.quadrants[2]->type,root->node.quadrants[2]->level,root->node.quadrants[2]->cx,root->node.quadrants[2]->cy,root->node.quadrants[2]->parent,root->node.quadrants[2]->nodes_inside
+  ,root->node.quadrants[3],root->node.quadrants[3]->type,root->node.quadrants[3]->level,root->node.quadrants[3]->cx,root->node.quadrants[3]->cy,root->node.quadrants[3]->parent,root->node.quadrants[3]->nodes_inside);
+
   printf("_______\n");
   printf("tree0\n");
   print_tree(root->node.quadrants[0],l/2);
@@ -59,14 +53,15 @@ void print_tree(QD_NODE* root, int l){
 
   printf("------\n");
 }
+
 //get node q's parent
 QD_NODE* get_parent(QD_NODE* q){
   return q->parent;
 }
+
 //create node that is empty
 QD_NODE* create_node(float level){
     QD_NODE * new_node = (QD_NODE*)malloc(sizeof(QD_NODE));
-
     new_node->type = QDLEAF;
     new_node->nodes_inside = 0;
     new_node->cx = new_node->cy = level;
@@ -76,15 +71,11 @@ QD_NODE* create_node(float level){
     new_node->node.leaf.ship = (SHIP*) malloc(sizeof(SHIP));
     new_node->node.leaf.p->x = -1;
     new_node->node.leaf.p->y = -1;
-    //new_node->node.leaf.p = NULL;
-    //new_node->node.leaf.ship = NULL;
-
     return new_node;
 }
 
 //expand tree(it is going to have atleast 2 nodes with data)
 void expand_tree(QD_NODE* root){
-  //printf("root.cx.cy(%f,%f)\n",root->cx,root->cy);
   root->type = QDNODE;
   root->nodes_inside = 2;
   root->node.quadrants[0] = create_node(((root->level)/2.0));
@@ -113,7 +104,6 @@ void expand_tree(QD_NODE* root){
   root->node.quadrants[1]->parent = root;
   root->node.quadrants[2]->parent = root;
   root->node.quadrants[3]->parent = root;
-
 }
 
 
@@ -121,7 +111,6 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
   //printf("rootcx,cy(%f,%f)\n",root->cx,root->cy);
   if(x<=root->cx){
     if(y<=root->cy){
-      //printf("root.cx,root.cy(%.3f,%.3f)\n",save->cx,save->cy);
       save->cx -= save->level/2.0;
       save->cy -= save->level/2.0;
       save->level/=2;
@@ -129,13 +118,12 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
       //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[0]);
-
+      root->nodes_inside+=1;
 
       return root->node.quadrants[0];
      }
     //y>l
     else{
-      //printf("root.cx,root.cy(%.3f,%.3f)\n",save->cx,save->cy);
       save->cx -= save->level/2.0;
       save->cy += save->level/2.0;
       save->level/=2;
@@ -143,14 +131,13 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
       //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[1]);
-
+      root->nodes_inside+=1;
 
       return root->node.quadrants[1];
    }
   }
   else{ //x>l
     if(y<=root->cy){
-      //printf("root.cx,root.cy(%.3f,%.3f)\n",save->cx,save->cy);
       save->cx += save->level/2.0;
       save->cy -= save->level/2.0;
       save->level/=2;
@@ -158,7 +145,7 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
       //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[2]);
-
+      root->nodes_inside+=1;
 
     return root->node.quadrants[2];
    }
@@ -171,7 +158,7 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
       //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[3]);
-
+      root->nodes_inside+=1;
 
       return root->node.quadrants[3];
      }
@@ -186,7 +173,7 @@ QD_NODE * get_subdivision(int x,int y,float cx,float cy,float l,QD_NODE* root){
   printf("id:%p\n",root);
   //printf("cx,cy:(%.3f,%.3f),root.cx,root.cy(%.3f,%.3f)\n",cx,cy,root->cx,root->cy);
   //printf("l:%f\n",l);
-
+  root->nodes_inside+=1;
   if(root->type == QDLEAF) return root;
   if(root == NULL){
     printf("Not found!\n");
@@ -211,9 +198,6 @@ void divide_insert(QD_NODE* root, QD_NODE* copy, QD_NODE* n){
   QD_NODE* q1 = create_node(root->level);
   QD_NODE* q2 = create_node(root->level);
   q2 = q1 = root;
-
-  //printf("--q1.level=%f, q2.level=%f--\n",copy->level,n->level);
-  //printf("--q1.cx.cy(%f,%f)--\n",copy->cx,copy->cy);
   while(1){
     expand_tree(q1);
 
@@ -227,18 +211,14 @@ void divide_insert(QD_NODE* root, QD_NODE* copy, QD_NODE* n){
 
     print_tree(root,root->level);
     printf("END--------------\n");
-    //q1->level = get_parent(q1)->level/2;
     if(q1 != q2) break;
-
+    //q1->nodes_inside+=2;
   }
-
   *q1->node.leaf.ship = *copy->node.leaf.ship;
   *q1->node.leaf.p = *copy->node.leaf.p;
-  //printf("q1_level = %f\n",q1->level);
-  //*q1->node.leaf.p->y = *copy->node.leaf.p->y;
+
   *q2->node.leaf.ship = *n->node.leaf.ship;
   *q2->node.leaf.p = *n->node.leaf.p;
-  //printf("q2_level = %f\n",q2->level);
 
 }
 
@@ -271,6 +251,7 @@ int node_insert(QD_NODE* root,QD_NODE* n){
       copy->cx = root->cx;
       copy->cy = root->cy;
       divide_insert(root,copy,n);
+      //root->nodes_inside+=1;
       return 1;
     }
   }
@@ -283,6 +264,7 @@ int node_insert(QD_NODE* root,QD_NODE* n){
     n->level = aux->level;
     //printf("LEVEL:%f\n",aux->level);
     node_insert(aux,n);
+    //root->nodes_inside+=1;
     //free(aux);
     //aux = NULL;
     return 1;
@@ -328,15 +310,15 @@ int node_delete(QD_NODE* root, int x, int y, int l){
     return 1;
   }
   printf("flag2:\n");
-  //printf("l(%d,%d)\n",x,y);
+
   //locate node where point(x,y) belongs
   QD_NODE* e = get_subdivision(x,y,(root->level)/2.0,(root->level)/2.0,(root->level)/2.0,root);
 
-  printf("e:%p\n",e);
-  printf("rootad:%p\n",root->node.quadrants[0]->node.quadrants[0]->node.quadrants[2]->node.quadrants[3]->node.quadrants[1]);
+  //printf("e-:%p\n",e);
+  //printf("rootad:%p\n",root->node.quadrants[0]->node.quadrants[3]->node.quadrants[0]->node.quadrants[3]);
   //printf("-(%d,%d)\n",root->node.quadrants[0]->node.quadrants[2]->node.quadrants[3]->node.quadrants[3]->node.leaf.p->x,root->node.quadrants[0]->node.quadrants[2]->node.quadrants[3]->node.quadrants[3]->node.leaf.p->y);
 
-  printf("e:(%d,%d)\n",root->node.quadrants[0]->node.quadrants[0]->node.quadrants[2]->node.quadrants[3]->node.quadrants[1]->node.leaf.p->x,root->node.quadrants[0]->node.quadrants[0]->node.quadrants[2]->node.quadrants[3]->node.quadrants[1]->node.leaf.p->y);
+  //printf("e:(%d,%d)\n",root->node.quadrants[0]->node.quadrants[3]->node.quadrants[0]->node.quadrants[3]->node.leaf.p->x,root->node.quadrants[0]->node.quadrants[3]->node.quadrants[0]->node.quadrants[3]->node.leaf.p->y);
   //printf("e:%p\n",e);
 
   if(e == NULL){
@@ -344,21 +326,20 @@ int node_delete(QD_NODE* root, int x, int y, int l){
     return -1;
   }
 
-  QD_NODE* e_parent = create_node(e->level*4.0);
-  e_parent = get_parent(e);
-
+  QD_NODE* e_parent = get_parent(e);
   printf("%d\n",e_parent->type);
-  printf("ddd\n");
+
   while(e_parent != root){
+
     printf("flag2.1:\n");
     e_parent->nodes_inside -= 1;
 
     //remove node
-    free(e->node.leaf.ship);
-    free(e->node.leaf.p);
+    //free(e->node.leaf.ship);
+    //free(e->node.leaf.p);
     e->node.leaf.ship = NULL;
     e->node.leaf.p = NULL;
-    free(e);
+    //free(e);
     e = NULL;
 
 
@@ -416,22 +397,29 @@ int main(){
   d3->node.leaf.ship = boat4;
 
   node_insert(root,d);
-  print_tree(root,l);
-  printf("END.LLL.%d\n",l);
+  //print_tree(root,l);
+  //printf("END.LLL.%d\n",l);
 
   node_insert(root,d1);
-  print_tree(root,l);
-  printf("END.LLL.%d\n",l);
+  //print_tree(root,l);
+  //printf("END.LLL.%d\n",l);
 
   node_insert(root,d2);
-  print_tree(root,l);
-  printf("END.LLL.%d\n",l);
+  //print_tree(root,l);
+  //printf("END.LLL.%d\n",l);
 
   node_insert(root,d3);
-  print_tree(root,l);
-  printf("END.LLL.%d\n",l);
+  //print_tree(root,l);
+  //printf("END.LLL.%d\n",l);
 
-  printf("where to insert:\n");
+  print_tree(root,l);
+  printf("END\n");
+
+  printf("nodes inside root:%d\n",root->nodes_inside);
+  printf("%d", node_delete(root,d3->node.leaf.p->x,d3->node.leaf.p->y,root->level));
+
+  print_tree(root,l);
+  printf("END\n");
 
   return 0;
 }
