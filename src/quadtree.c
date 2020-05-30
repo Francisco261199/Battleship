@@ -353,6 +353,99 @@ int node_delete(QD_NODE* root, int x, int y, int l){
 }
 
 
+int search_point(POINT * p,float cx,float cy,float l,QD_NODE* root){
+
+  //printf("before.l:%d\n",l);
+  printf("type:%d\n", root->type);
+  printf("x,y:(%d,%d)\n",x,y);
+  printf("id:%p\n",root);
+  printf("cx,cy:(%d,%d)\n",cx,cy);
+  printf("l:%d\n",l);
+  //printf("address:%p\n",root);
+  if((root->type == QDLEAF || l == 0) && ( (p->x) == root->node.leaf.p->x ) && (p->y) == root->node.leaf.p->y ) return 1;
+  if(root == NULL){
+    printf("Not found!\n");
+    return -1;
+  }
+
+  if(p->x<=cx){
+    if(p->y<=cy) return search_point(p->x,p->y,cx-l/2,cy-l/2,l/2,root->node.quadrants[0]);
+    //y>=l
+    else return search_point(p->x,p->y,cx-l/2,cy+l/2,l/2,root->node.quadrants[1]);
+  }
+  else{ //x<l
+    if(p->y<=cy) return search_point(p->x,p->y,cx+l/2,cy-l/2,l/2,root->node.quadrants[2]);
+
+    //y<l
+    else return search_point(p->x,p->y,cx+l/2,cy+l/2,l/2,root->node.quadrants[3]);
+  }
+  return -1;
+}
+
+
+POINT* [] create_points(POINT* p, SHIP* ship){
+  int index=0;
+  POINT * ans[ship->size] = (POINT*) malloc (sizeof((ship->size)*POINT));
+  for(int i=0;i<5;i++){
+    for(int j=0;j<5;j++){
+      if(ship->bitmap[i][j] == 1){
+        ans[index]->x = ((p->x) + i - 2);
+        ans[index]->y = ((p->y) + j - 2);
+        index++;
+      }
+    }
+  }
+  return ans;
+}
+
+int verify( POINT * points[],int size,int map_size, QD_NODE * root){
+  int check = 0;
+  float cx = (float) map_size-1/2;
+  float cy = (float) map_size-1/2;
+
+  for(int i = 0; i<size;i++){
+    check+=search_point(points[i],cx,cy,(float)map_size-1,root);
+  }
+return check;
+}
+
+void insert_ship(POINT* p,SHIP * ship,QD_NODE * root,int size){
+  POINT * points[] = create_points(p,ship); 
+
+   //verificar se pode ser inserido
+if(verify(points,ship->size,root) != ship->size){
+    check:
+    printf("\033[1;31m");
+    printf("ERROR! You can't insert the boat here!\n");
+    printf("\033[1;33m");
+    printf("Please choose another position.\n");
+    printf("X: "); scanf("%d",&x);
+    printf("Y: "); scanf("%d",&y);
+    printf("\n");
+    free(points);
+    POINT = NULL;
+    POINT * newpoint = (POINT*) malloc(sizeof(POINT));
+    newpoint->x = x;
+    newpoint->y = y;
+
+    insert_ship(newpoint,ship,map,map_size);
+
+  }
+
+else
+
+  int flg;
+  for(int i=0;i<ship->size,i++){
+    QD_NODE* n = create_node(size-1);
+    n->node.leaf.point = point[i];
+    n->node.leaf.ship = ship;
+  if((flg = node_insert(root,n)) == -1) goto check;
+
+
+}
+}
+
+
 int main(){
   int l = 19;
   POINT* p = make_point(3,1);
