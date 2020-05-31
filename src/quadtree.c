@@ -451,37 +451,83 @@ void insert_ship(POINT* p, SHIP* ship, QD_NODE * root){
   }
 }
 
-int main(){
-  int l = 20;
-  POINT* p = make_point(3,1);
-  //POINT* p1 = make_point(7,3);
-  //POINT* p2 = make_point(7,4);
-  //POINT* p3 = make_point(7,5);
-  POINT* p4 = make_point(7,6);
-  SHIP* boat =(SHIP*) malloc (sizeof(SHIP));
-  create_ship(boat,2,7);
-  //SHIP* boat1 =(SHIP*) malloc (sizeof(SHIP));
-  //create_ship(boat1,2,4);
-  //SHIP* boat2 =(SHIP*) malloc (sizeof(SHIP));
-  //create_ship(boat2,1,9);
-  SHIP* boat3 =(SHIP*) malloc (sizeof(SHIP));
-  create_ship(boat3,1,9);
-  //SHIP* boat4 =(SHIP*) malloc (sizeof(SHIP));
-  //create_ship(boat4,1,9);
-  QD_NODE* root = create_node(l-1);
-  root->node.leaf.p = p;
-  root->node.leaf.ship = boat3;
-  root->cx/=2;
-  root->cy/=2;
 
-  insert_ship(p4,boat,root);
-  print_tree(root,root->level);
-  /*int l = 19;
+int generate_number(int a,int b){
+  return (a == 0)? rand()% ++b:rand() % ++b + a;
+}
+
+void rand_insert_ships(QD_NODE* root1,QD_NODE* root2){
+  int boat_types[]={2,3,4,5,7,9};
+  int x1,x2,y1,y2,map_size,rotation,verify;
+  map_size = root1->level;
+int n_for_each_boat[6] = {1,1,1,1,1,1};
+
+  printf("flag 1");
+
+  for(int i=0;i<6;i++){
+    for(int j=0;j<n_for_each_boat[i];j++){
+
+      //create ships
+      SHIP* newship1 = (SHIP*) malloc(sizeof(SHIP));
+      SHIP* newship2 = (SHIP*) malloc(sizeof(SHIP));
+      POINT* p1 = make_point(0,0);
+      POINT* p2 = make_point(0,0); 
+      rotation = generate_number(0,3);
+      create_ship(newship1,rotation,boat_types[i]);
+      create_ship(newship2,rotation,boat_types[i]);
+
+      //get random coordinates
+      p1->x = generate_number(0,(map_size));
+      p1->y = generate_number(0,(map_size));
+      p2->x = generate_number(0,(map_size));
+      p2->y = generate_number(0,(map_size));
+
+     
+
+      QD_NODE* n1 = create_node(root1->level);
+       *n1->node.leaf.p = *p1;
+      QD_NODE* n2 = create_node(root2->level);
+        *n2->node.leaf.p = *p2;
+
+         printf("flag 2");
+
+      //verify if insertion is possible
+      while((verify=verify_insert(n1,root1)) != newship1->size){
+        p1->x = generate_number(0,(map_size));
+        p1->y = generate_number(0,(map_size));
+         printf("%d %d\n",p1->x,p1->y);
+      }
+
+      while((verify=verify_insert(n2,root2)) != newship2->size){
+        p2->x = generate_number(0,(map_size));
+        p2->y = generate_number(0,(map_size));
+         printf("flag 4");
+
+      }
+
+      //insert
+      insert_ship(p1,newship1,root1);
+      insert_ship(p2,newship2,root2);
+
+      free(p1);
+      free(p2);
+      p1 = NULL;
+      p2 = NULL;
+
+       printf("flag 5");
+    }
+  }
+}
+
+
+int main(){
+ int l = 19;
   POINT* p = make_point(3,1);
   POINT* p1 = make_point(7,3);
   POINT* p2 = make_point(7,4);
   POINT* p3 = make_point(7,5);
   POINT* p4 = make_point(7,6);
+
 
 
   SHIP* boat =(SHIP*) malloc (sizeof(SHIP));
@@ -495,51 +541,65 @@ int main(){
   SHIP* boat4 =(SHIP*) malloc (sizeof(SHIP));
   create_ship(boat4,1,9);
 
+QD_NODE* root1 = create_node(l);
+
+  QD_NODE* root2 = create_node(l);
+rand_insert_ships(root1,root2);
+
+  print_tree(root1,l);
+  printf("---------Second Tree---------");
+  print_tree(root2,l);
+  printf("END\n");
+
+  /*int l = 19;
+  POINT* p = make_point(3,1);
+  POINT* p1 = make_point(7,3);
+  POINT* p2 = make_point(7,4);
+  POINT* p3 = make_point(7,5);
+  POINT* p4 = make_point(7,6);
+  SHIP* boat =(SHIP*) malloc (sizeof(SHIP));
+  create_ship(boat,2,7);
+  SHIP* boat1 =(SHIP*) malloc (sizeof(SHIP));
+  create_ship(boat1,2,4);
+  SHIP* boat2 =(SHIP*) malloc (sizeof(SHIP));
+  create_ship(boat2,1,9);
+  SHIP* boat3 =(SHIP*) malloc (sizeof(SHIP));
+  create_ship(boat3,1,9);
+  SHIP* boat4 =(SHIP*) malloc (sizeof(SHIP));
+  create_ship(boat4,1,9);
   QD_NODE* root = create_node(l);
   root->node.leaf.p = p;
   root->node.leaf.ship = boat;
   root->cx/=2;
   root->cy/=2;
-
-
   QD_NODE* d = create_node(l);
   *d->node.leaf.p = *p1;
   *d->node.leaf.ship = *boat1;
-
   QD_NODE* d1 = create_node(l);
   *d1->node.leaf.p = *p2;
   *d1->node.leaf.ship = *boat2;
-
   QD_NODE* d2 = create_node(l);
   *d2->node.leaf.p = *p3;
   *d2->node.leaf.ship = *boat3;
-
   QD_NODE* d3 = create_node(l);
   *d3->node.leaf.p = *p4;
   *d3->node.leaf.ship = *boat4;
-
   node_insert(root,d);
   //print_tree(root,l);
   //printf("END.LLL.%d\n",l);
-
   node_insert(root,d1);
   //print_tree(root,l);
   //printf("END.LLL.%d\n",l);
-
   node_insert(root,d2);
   //print_tree(root,l);
   //printf("END.LLL.%d\n",l);
-
   node_insert(root,d3);
   //print_tree(root,l);
   //printf("END.LLL.%d\n",l);
-
   print_tree(root,l);
   printf("END\n");
-
   printf("nodes inside root:%d\n",root->nodes_inside);
   node_delete(root,d3->node.leaf.p->x,d3->node.leaf.p->y,root->level);
-
   print_tree(root,l);
   printf("END\n");*/
 
