@@ -381,14 +381,25 @@ POINT* create_points(POINT* p, SHIP* ship){
   return ans;
 }
 
-int verify(POINT *points,int size,QD_NODE * root){
-  int check = 0;
-
-  for(int i = 0; i<size;i++){
-    check+=search_point(points[i],root);
+// inserção do navio no tabuleiro
+int verify_insert(QD_NODE* insert, QD_NODE* root){
+  int x = insert->node.leaf.p->x;
+  int y = insert->node.leaf.p->y;
+  if(x>(root->level) || y>(root->level)) return 1;
+  int flag,clear;
+  clear = 0;
+  for(int i=0;i<5;i++){
+    for(int j=0;j<5;j++){
+      flag = 1;
+      //able to place boats in extremity of map even if bitmap doesn't fit
+      if( ((x+i-2) >= root->level || (y+j-2) >= root->level || (x+i-2) < 0 || (y+j-2) < 0 ) && insert->node.leaf.ship->bitmap[i][j] == EMPTY) flag=0;
+      //out of bounds
+      else if( ((x+i-2) >= root->level || (y+j-2) >= root->level || (x+i-2) < 0 || (y+j-2) < 0 ) && insert->node.leaf.ship->bitmap[i][j] != EMPTY) return 1;
+      //insert is possible for given position
+      if(flag == 1 && insert->node.leaf.ship->bitmap[i][j] == NOT_HIT && get_subdivision(x+i-2,y+j-2,insert->cx,insert->cy,root,2)) clear++;
+    }
   }
-
-return check;
+  return clear;
 }
 
 void insert_ship(POINT* p,SHIP * ship,QD_NODE * root,int size){
