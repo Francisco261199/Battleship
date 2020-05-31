@@ -59,6 +59,13 @@ QD_NODE* get_parent(QD_NODE* q){
   return q->parent;
 }
 
+QD_NODE* get_last_child(QD_NODE* e){
+  for(int i=0;i<=3;i++){
+    if(e->node.quadrants[i]->node.leaf.ship != NULL) return e->node.quadrants[i];
+  }
+  return NULL;
+}
+
 //create node that is empty
 QD_NODE* create_node(float level){
     QD_NODE * new_node = (QD_NODE*)malloc(sizeof(QD_NODE));
@@ -74,10 +81,27 @@ QD_NODE* create_node(float level){
     return new_node;
 }
 
+void node_clean(QD_NODE* e){
+  if(e->type == QDLEAF){
+    e->node.leaf.ship = NULL;
+    free(e->node.leaf.ship);
+    e->node.leaf.p = NULL;
+    free(e->node.leaf.p);
+    e->parent = NULL;
+    free(e->parent);
+    e = NULL;
+    free(e);
+  }
+  else{
+    e = NULL;
+    free(e);
+  }
+}
+
 //expand tree(it is going to have atleast 2 nodes with data)
 void expand_tree(QD_NODE* root){
   root->type = QDNODE;
-  root->nodes_inside = 2;
+  root->nodes_inside = 1;
   root->node.quadrants[0] = create_node(((root->level)/2.0));
   root->node.quadrants[1] = create_node(((root->level)/2.0));
   root->node.quadrants[2] = create_node(((root->level)/2.0));
@@ -106,8 +130,9 @@ void expand_tree(QD_NODE* root){
   root->node.quadrants[3]->parent = root;
 }
 
-
-QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
+//get next node
+//flag specifies if we are searching for a point during boat insertion or deletion
+QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root, int flag){
   //printf("rootcx,cy(%f,%f)\n",root->cx,root->cy);
   if(x<=root->cx){
     if(y<=root->cy){
@@ -118,7 +143,7 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
       //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[0]);
-      root->nodes_inside+=1;
+      if(flag == 1)root->nodes_inside+=1;
 
       return root->node.quadrants[0];
      }
@@ -131,7 +156,7 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
       //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[1]);
-      root->nodes_inside+=1;
+      if(flag == 1)root->nodes_inside+=1;
 
       return root->node.quadrants[1];
    }
@@ -145,7 +170,7 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
       //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[2]);
-      root->nodes_inside+=1;
+      if(flag == 1)root->nodes_inside+=1;
 
     return root->node.quadrants[2];
    }
@@ -158,7 +183,7 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
       //printf("type:%d\n", root->type);
       printf("x,y:(%d,%d)\n",x,y);
       printf("id:%p\n",root->node.quadrants[3]);
-      root->nodes_inside+=1;
+      if(flag == 1)root->nodes_inside+=1;
 
       return root->node.quadrants[3];
      }
@@ -166,29 +191,35 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root){
 }
 
 //quadrants [‘NW’,‘NE’,‘SW’,‘SE’] x=lines y=cols
-QD_NODE * get_subdivision(int x,int y,float cx,float cy,float l,QD_NODE* root){
+//flag specifies if we are searching for a point during boat insertion or deletion
+QD_NODE * get_subdivision(int x,int y,float cx,float cy,float l,QD_NODE* root,int flag){
   //printf("before.l:%d\n",l);
   //printf("type:%d\n", root->type);
   printf("x,y:(%d,%d)\n",x,y);
   printf("id:%p\n",root);
   //printf("cx,cy:(%.3f,%.3f),root.cx,root.cy(%.3f,%.3f)\n",cx,cy,root->cx,root->cy);
   //printf("l:%f\n",l);
-  root->nodes_inside+=1;
+
   if(root->type == QDLEAF) return root;
   if(root == NULL){
     printf("Not found!\n");
     return NULL;
   }
+  //searching to insert
+  if(flag == 1)root->nodes_inside+=1;
+  //searching to remove
+  else if(flag == 0) root->nodes_inside-=1;
 
+  //find next subdivision
   if(x<=cx){
-    if(y<=cy) return get_subdivision(x,y,cx-l/2.0,cy-l/2.0,l/2.0,root->node.quadrants[0]);
+    if(y<=cy) return get_subdivision(x,y,cx-l/2.0,cy-l/2.0,l/2.0,root->node.quadrants[0],flag);
     //y>l
-    else return get_subdivision(x,y,cx-l/2.0,cy+l/2.0,l/2.0,root->node.quadrants[1]);
+    else return get_subdivision(x,y,cx-l/2.0,cy+l/2.0,l/2.0,root->node.quadrants[1],flag);
   }
   else{ //x>l
-    if(y<=cy) return get_subdivision(x,y,cx+l/2.0,cy-l/2.0,l/2.0,root->node.quadrants[2]);
+    if(y<=cy) return get_subdivision(x,y,cx+l/2.0,cy-l/2.0,l/2.0,root->node.quadrants[2],flag);
     //y>l
-    else return get_subdivision(x,y,cx+l/2.0,cy+l/2.0,l/2.0,root->node.quadrants[3]);
+    else return get_subdivision(x,y,cx+l/2.0,cy+l/2.0,l/2.0,root->node.quadrants[3],flag);
   }
   return NULL;
 }
@@ -201,25 +232,30 @@ void divide_insert(QD_NODE* root, QD_NODE* copy, QD_NODE* n){
   while(1){
     expand_tree(q1);
 
-    q1 = get_next(copy->node.leaf.p->x,copy->node.leaf.p->y,copy,q1);
+    q1 = get_next(copy->node.leaf.p->x,copy->node.leaf.p->y,copy,q1,0);
     //  printf("q1:%p\n",q1);
     printf("-------------\n");
 
-    q2 = get_next(n->node.leaf.p->x,n->node.leaf.p->y,n,q2);
+    q2 = get_next(n->node.leaf.p->x,n->node.leaf.p->y,n,q2,1);
     //  printf("q2:%p\n",q2);
     printf("-------------\n");
 
     print_tree(root,root->level);
     printf("END--------------\n");
     if(q1 != q2) break;
-    //q1->nodes_inside+=2;
   }
   *q1->node.leaf.ship = *copy->node.leaf.ship;
   *q1->node.leaf.p = *copy->node.leaf.p;
+  q1->nodes_inside = 1;
 
   *q2->node.leaf.ship = *n->node.leaf.ship;
   *q2->node.leaf.p = *n->node.leaf.p;
+  q2->nodes_inside = 1;
 
+  q1 = NULL;
+  q2 = NULL;
+  free(q1);
+  free(q2);
 }
 
 int node_insert(QD_NODE* root,QD_NODE* n){
@@ -234,63 +270,42 @@ int node_insert(QD_NODE* root,QD_NODE* n){
     if(root->node.leaf.p->x == -1){
       //printf("flag1.1\n");
       *root = *n;
-      //n = root;
-      //free(n);
-      //n = NULL;
       root->parent = get_parent(root);
       root->nodes_inside = 1;
-      printf("Valid insert.(%d,%d),p:%p\n",root->node.leaf.p->x,root->node.leaf.p->y,root);
+      //printf("Valid insert.(%d,%d),p:%p\n",root->node.leaf.p->x,root->node.leaf.p->y,root);
       return 1;
     }
     else{ //create sub-tree divisions
       //printf("flag1.2\n");
       QD_NODE* copy = create_node(root->level/2);
-      *copy->node.leaf.ship = *root->node.leaf.ship;
-      *copy->node.leaf.p = *root->node.leaf.p;
-      copy->level =root->level;
+      copy->node.leaf.ship = root->node.leaf.ship;
+      copy->node.leaf.p = root->node.leaf.p;
+      copy->level = root->level;
       copy->cx = root->cx;
       copy->cy = root->cy;
       divide_insert(root,copy,n);
-      //root->nodes_inside+=1;
+      copy = NULL;
+      free(copy);
       return 1;
     }
   }
   else{ //not at leaf node
     //printf("flag2\n");
     QD_NODE* aux = create_node(19.0);
-    aux = get_subdivision(n->node.leaf.p->x, n->node.leaf.p->y,root->level/2.0,root->level/2.0,root->level/2.0, root);
+    aux = get_subdivision(n->node.leaf.p->x, n->node.leaf.p->y,root->level/2.0,root->level/2.0,root->level/2.0, root,1);
     n->cx = aux->cx;
     n->cy = aux->cy;
     n->level = aux->level;
     //printf("LEVEL:%f\n",aux->level);
     node_insert(aux,n);
-    //root->nodes_inside+=1;
-    //free(aux);
-    //aux = NULL;
+    aux = NULL;
+    free(aux);
     return 1;
   }
   return -1;
 }
 
-//eliminate subdivision
-void colapse_division(QD_NODE* parent){
-  for(int i=0;i<4;i++){
-    //if we find last node on subdivision place it in root of that subdivision
-    if(parent->node.quadrants[i]!=NULL && !(parent->node.quadrants[i]->type == QDNODE)){
-      *parent->node.leaf.ship = *parent->node.quadrants[i]->node.leaf.ship;
-      *parent->node.leaf.p = *parent->node.quadrants[i]->node.leaf.p;
-      free(parent->node.quadrants[i]->node.leaf.ship);
-      free(parent->node.quadrants[i]->node.leaf.p);
-      parent->node.quadrants[i]->node.leaf.ship = NULL;
-      parent->node.quadrants[i]->node.leaf.p = NULL;
-      free(parent->node.quadrants[i]);
-      parent->node.quadrants[i] = NULL;
-      printf("eliminated, in i:%d\n",i);
-      break;
-    }
-  }
-}
-
+//find and delete a node
 int node_delete(QD_NODE* root, int x, int y, int l){
   if(root == NULL){
     printf("No tree found\n");
@@ -298,7 +313,7 @@ int node_delete(QD_NODE* root, int x, int y, int l){
   }
 
   if(root->nodes_inside == 1){ //tree/sub-tree constains only one node
-    printf("flag1:\n");
+    //printf("flag1:\n");
     root->node.leaf.ship = NULL;
     root->node.leaf.p = NULL;
     free(root->node.leaf.ship);
@@ -309,75 +324,44 @@ int node_delete(QD_NODE* root, int x, int y, int l){
 
     return 1;
   }
-  printf("flag2:\n");
+  //printf("flag2:\n");
 
   //locate node where point(x,y) belongs
-  QD_NODE* e = get_subdivision(x,y,(root->level)/2.0,(root->level)/2.0,(root->level)/2.0,root);
+  QD_NODE* child = get_subdivision(x,y,(root->level)/2.0,(root->level)/2.0,(root->level)/2.0,root,0);
+  //printf("after remove\n");
+  //print_boat(child->node.leaf.ship);
 
-  //printf("e-:%p\n",e);
-  //printf("rootad:%p\n",root->node.quadrants[0]->node.quadrants[3]->node.quadrants[0]->node.quadrants[3]);
-  //printf("-(%d,%d)\n",root->node.quadrants[0]->node.quadrants[2]->node.quadrants[3]->node.quadrants[3]->node.leaf.p->x,root->node.quadrants[0]->node.quadrants[2]->node.quadrants[3]->node.quadrants[3]->node.leaf.p->y);
-
-  //printf("e:(%d,%d)\n",root->node.quadrants[0]->node.quadrants[3]->node.quadrants[0]->node.quadrants[3]->node.leaf.p->x,root->node.quadrants[0]->node.quadrants[3]->node.quadrants[0]->node.quadrants[3]->node.leaf.p->y);
-  //printf("e:%p\n",e);
-
-  if(e == NULL){
-    printf("That node doesn't exist.\n");
+  if(child == NULL){
+    //printf("That node doesn't exist.\n");
     return -1;
   }
 
-  QD_NODE* e_parent = get_parent(e);
-  printf("%d\n",e_parent->type);
+  QD_NODE* parent = get_parent(child);
+  //printf("parent:%p, nodes_inside: %d\n",parent,parent->nodes_inside);
 
-  while(e_parent != root){
-
-    printf("flag2.1:\n");
-    e_parent->nodes_inside -= 1;
-
-    //remove node
-    //free(e->node.leaf.ship);
-    //free(e->node.leaf.p);
-    e->node.leaf.ship = NULL;
-    e->node.leaf.p = NULL;
-    //free(e);
-    e = NULL;
-
-
-    if(e_parent->nodes_inside == 1){ //only one node left
-      colapse_division(e_parent);
-    }
-    e_parent = get_parent(e_parent);
+  while(parent != NULL && parent->nodes_inside == 1){
+    parent->type = QDLEAF;
+    *parent->node.leaf.ship = *child->node.leaf.ship;
+    *parent->node.leaf.p = *child->node.leaf.p;
+    node_clean(child);
+    child = parent;
+    parent = get_parent(child);
   }
 
+  child = NULL;
+  free(child);
+  node_clean(parent);
   return 1;
 }
 
 
-int search_point(POINT * p,float cx,float cy,float l,QD_NODE* root){
-
-  //printf("before.l:%d\n",l);
-  printf("type:%d\n", root->type);
-  printf("x,y:(%d,%d)\n",x,y);
-  printf("id:%p\n",root);
-  printf("cx,cy:(%d,%d)\n",cx,cy);
-  printf("l:%d\n",l);
-  //printf("address:%p\n",root);
-  if((root->type == QDLEAF || l == 0) && ( (p->x) == root->node.leaf.p->x ) && (p->y) == root->node.leaf.p->y ) return 1;
-  if(root == NULL){
-    printf("Not found!\n");
-    return -1;
-  }
-
-  if(p->x<=cx){
-    if(p->y<=cy) return search_point(p->x,p->y,cx-l/2,cy-l/2,l/2,root->node.quadrants[0]);
-    //y>=l
-    else return search_point(p->x,p->y,cx-l/2,cy+l/2,l/2,root->node.quadrants[1]);
-  }
-  else{ //x<l
-    if(p->y<=cy) return search_point(p->x,p->y,cx+l/2,cy-l/2,l/2,root->node.quadrants[2]);
-
-    //y<l
-    else return search_point(p->x,p->y,cx+l/2,cy+l/2,l/2,root->node.quadrants[3]);
+int search_point(POINT * p,QD_NODE* root){
+  QD_NODE* compare = (QD_NODE*) malloc(sizeof(QD_NODE));
+  compare = get_subdivision(p->x,p->y,(root->level)/2.0,(root->level)/2.0,(root->level)/2.0,root,2);
+  if(compare->node.leaf.p->x == p->x && compare->node.leaf.p->y == p->y){
+    compare = NULL;
+    free(compare);
+    return 1;
   }
   return -1;
 }
