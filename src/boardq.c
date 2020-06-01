@@ -159,7 +159,7 @@ int verify_insert(QD_NODE* insert, QD_NODE* root, POINT* points){
 }
 
 //insert_ship
-void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,int map){
+void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,char *info){
   int size = (int) root->level +1;
   QD_NODE* insert = create_node(root->level/2.0);
   *insert->node.leaf.p = *p;
@@ -174,7 +174,7 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,int map){
     printf("X: "); scanf("%d",&p->x);
     printf("Y: "); scanf("%d",&p->y);
     printf("\n");
-    insert_ship(p,points,ship,root,map);
+    insert_ship(p,points,ship,root,info);
   }
   else{
     //POINT *point_array = (POINT*) malloc(ship->size*sizeof(POINT));
@@ -184,8 +184,8 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,int map){
       //printf("node to insert:(%d,%d)\n",points[i].x,points[i].y);
       *insert->node.leaf.p = points[i];
       (void)node_insert(root,insert);
-      if(map == 1) info1[points[i].x*size + points[i].y]=_NO_HIT;
-      else if(map == 2) info2[points[i].x*size + points[i].y]=_NO_HIT;
+       info[points[i].x*size + points[i].y]=_NO_HIT;
+     
 
     }
     //free(point_array);
@@ -257,8 +257,8 @@ void rand_insert_ships(QD_NODE* root1,QD_NODE* root2){
 
       //insert
       
-      insert_ship(p1,point_array1,newship1,root1,1);
-      insert_ship(p2,point_array2,newship2,root2,2);
+      insert_ship(p1,point_array1,newship1,root1,info1);
+      insert_ship(p2,point_array2,newship2,root2,info2);
    
 
       free(p1);
@@ -326,12 +326,12 @@ void user_insert(GAME* g){
         //player 1 inserts('insert_ship' asks for new coordinates if needed)
         if(player == 1){
           create_ship(newship,boat_rotation,boat_types[i]);
-          insert_ship(p,points,newship,g->root1,1);
+          insert_ship(p,points,newship,g->root1,info1);
         }
         //player2 inserts('insert_ship' asks for new coordinates if needed)
         else{
           create_ship(newship,boat_rotation,boat_types[i]);
-          insert_ship(p,points,newship,g->root2,2);
+          insert_ship(p,points,newship,g->root2,info2);
         }
       }
     }
@@ -339,8 +339,7 @@ void user_insert(GAME* g){
 }
 
 //atack ship
-int attack(int x, int y, QD_NODE* root,int player){
-    int size = root->level+1;
+int attack(int x, int y, QD_NODE* root, char *info){
   //ask for new coordinates if user selects out of bounds position
   if(x>root->level || y>root->level){
     do{
@@ -372,8 +371,7 @@ int attack(int x, int y, QD_NODE* root,int player){
       //update bitmap
       get->node.leaf.ship->bitmap[bitmap_x][bitmap_y] = HIT;
       //update CELL
-      if(player == 1) info1[x1*size+y1] = _HIT_CELL;
-      else if(player == 2) info2[x1*size+y1] = _HIT_CELL;
+      info[x1*size+y1] = _HIT_CELL;
       get->node.leaf.ship->size -= 1;
       node_delete(root,get->node.leaf.p->x,get->node.leaf.p->y);
       printf("Hit!\n");
@@ -386,13 +384,13 @@ int attack(int x, int y, QD_NODE* root,int player){
     }
 
     //boat piece already hit
-    if(map[x1*size+y1] == HIT){
+    if(info[x1*size+y1] == HIT){
       printf("Already hit(with boat)! Please try again\n");
       //get new coodinates
       printf("X: "); x = read_buffer();
       printf("Y: "); y = read_buffer();
       printf("\n");
-      attack(x,y,root,map);
+      attack(x,y,root,info);
       return 0;
     }
   }
@@ -400,21 +398,21 @@ int attack(int x, int y, QD_NODE* root,int player){
   //no boat(water)
   else{
     //non-attacked position
-    if(get->node.leaf.ship == NULL && map[x1*size+y1] == _NO_SHOT){
+    if(get->node.leaf.ship == NULL && info[x1*size+y1] == _NO_SHOT){
       printf("Miss!No Boat!\n");
       printf("\n");
       //update CELL
-      map[x1*size+y1] = _MISSED_SHOT;
+      info[x1*size+y1] = _MISSED_SHOT;
       return 0;
     }
     //already attacked position
-    if(map[x1*size+y1] == _MISSED_SHOT){
+    if(info[x1*size+y1] == _MISSED_SHOT){
       printf("Already hit(without boat)! Please try again\n");
       //get new coodinates
       printf("X: "); x = read_buffer();
       printf("Y: "); y = read_buffer();
       printf("\n");
-      attack(x,y,root,map);
+      attack(x,y,root,info);
       return 0;
     }
   }
@@ -429,7 +427,7 @@ GAME *game;
 
 game = init_board(20);
 
-rand_insert_ships(game->root1,game->root2);
+user_insert(game);
 //print_tree(game->root1,19);
 
 print_game(info1,size);
