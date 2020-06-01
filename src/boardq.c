@@ -19,6 +19,7 @@
 
 char *info1;
 char *info2;
+int n_for_each_boat[6] = {1,1,1,1,1,1};
 
 
 int read_buffer(){
@@ -199,11 +200,11 @@ int generate_number(int a,int b){
   return (a == 0)? rand()% ++b:rand() % ++b + a;
 }
 
-void rand_insert_ships(QD_NODE* root1,QD_NODE* root2){
+void rand_insert_ships(GAME* g){
   int boat_types[]={2,3,4,5,7,9};
   int map_size,rotation,verify;
-  map_size = root1->level;
-  int n_for_each_boat[6] = {1,1,1,1,1,1};
+  map_size =g->root1->level;
+
 
   //printf("flag 1");
 
@@ -231,19 +232,19 @@ void rand_insert_ships(QD_NODE* root1,QD_NODE* root2){
       POINT *point_array1 = (POINT*) malloc(newship1->size*sizeof(POINT));
       POINT *point_array2 = (POINT*) malloc(newship2->size*sizeof(POINT));
 
-      QD_NODE* n1 = create_node(root1->level);
+      QD_NODE* n1 = create_node(g->root1->level);
        *n1->node.leaf.p = *p1;
        *n1->node.leaf.ship = *newship1;
-      QD_NODE* n2 = create_node(root2->level);
+      QD_NODE* n2 = create_node(g->root2->level);
        *n2->node.leaf.p = *p2;
        *n2->node.leaf.ship = *newship2;
 
-      while((verify=verify_insert(n1,root1,point_array1)) != newship1->size){
+      while((verify=verify_insert(n1,g->root1,point_array1)) != newship1->size){
         n1->node.leaf.p->x = generate_number(0,(map_size));
         n1->node.leaf.p->y = generate_number(0,(map_size));
       }
 
-      while((verify=verify_insert(n2,root2,point_array2)) != newship2->size){
+      while((verify=verify_insert(n2,g->root2,point_array2)) != newship2->size){
         n2->node.leaf.p->x = generate_number(0,(map_size));
         n2->node.leaf.p->y = generate_number(0,(map_size));
       }
@@ -257,8 +258,8 @@ void rand_insert_ships(QD_NODE* root1,QD_NODE* root2){
 
       //insert
       
-      insert_ship(p1,point_array1,newship1,root1,info1);
-      insert_ship(p2,point_array2,newship2,root2,info2);
+      insert_ship(p1,point_array1,newship1,g->root1,info1);
+      insert_ship(p2,point_array2,newship2,g->root2,info2);
    
 
       free(p1);
