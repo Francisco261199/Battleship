@@ -23,7 +23,7 @@ int n_for_each_boat[6] = {1,1,1,1,1,1};
 
 
 int read_buffer(){
-  printf("\033[1;36m");
+  printf("\033[1;33m");
   char buffer[1024],*a;
   int number;
   while(fgets(buffer,sizeof(buffer),stdin)){
@@ -172,8 +172,8 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,char *info){
     printf("ERROR! You can't insert the boat here!\n");
     printf("\033[1;33m");
     printf("Please choose another position.\n");
-    printf("X: "); scanf("%d",&p->x);
-    printf("Y: "); scanf("%d",&p->y);
+    printf("X: "); p->x = read_buffer();
+    printf("Y: "); p->y = read_buffer();
     printf("\n");
     insert_ship(p,points,ship,root,info);
   }
@@ -312,12 +312,12 @@ void user_insert(GAME* g){
 
         //get valid rotation
         printf("Select Rotation: ");
-        scanf("%d",&boat_rotation);
+        boat_rotation = read_buffer();
         while(boat_rotation < 0 || boat_rotation > 3){
           printf("\033[1;31m");
           printf("Invalid rotation. Insert new one: ");
           printf("\033[1;33m");
-          scanf("%d",&boat_rotation);
+          boat_rotation = read_buffer();
         }
         printf("X:");
         p->x = read_buffer();
@@ -361,7 +361,7 @@ int attack(int x, int y, QD_NODE* root, char *info){
   y1 = (int)get->node.leaf.p->y;
   size = (int)root->level + 1;
   //has ship
-  if(get->node.leaf.ship != NULL){
+  if(get->node.leaf.p->x != -1){
 
     //conversion to bitmap coordinates(map(x,y)->bitmap(x,y))
     int bitmap_x = 2+(x-get->node.leaf.ship->x);
@@ -374,13 +374,13 @@ int attack(int x, int y, QD_NODE* root, char *info){
       //update CELL
       info[x1*size+y1] = _HIT_CELL;
       get->node.leaf.ship->size -= 1;
-      node_delete(root,get->node.leaf.p->x,get->node.leaf.p->y);
-      printf("Hit!\n");
       //ship fully destroyed
       if(get->node.leaf.ship->size == 0){
         printf("Ship Destroyed!\n");
         return 1;
       }
+      node_delete(root,get->node.leaf.p->x,get->node.leaf.p->y);
+      printf("Hit!\n");
       return 0;
     }
 
