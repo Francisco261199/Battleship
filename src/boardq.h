@@ -3,9 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "quadtree."
+#include "quadtree.h"
 #include "ships.h"
 #include "time.h"
+#include "menus.h"
 
 
 
@@ -35,3 +36,15 @@ typedef struct{
 
 extern char *info1;
 extern char *info2;
+
+
+
+GAME* init_board(int size);
+int verify_insert(QD_NODE* insert, QD_NODE* root, POINT* points);
+void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,int map);
+void rand_insert_ships(QD_NODE* root1,QD_NODE* root2);
+void user_insert(GAME* g);
+void print_secret_board(char* info,int size);
+void print_game(char *info,int size);
+
+#endif

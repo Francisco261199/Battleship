@@ -1,11 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "quadtree."
+#include "quadtree.h"
 #include "ships.h"
 #include "boardq.h"
 #include "time.h"
+#include "menus.h"
 
-//read buffer to avoid errors when typing chars or strings instead of int
+
+#define EMPTY '0'
+#define NOT_HIT '1'
+#define HIT '2'
+
+//flags for CELL maps
+#define _NO_SHOT '0'
+#define _NO_HIT '1'
+#define _HIT_CELL '2'
+#define _MISSED_SHOT '3'
+
+char *info1;
+char *info2;
+
+
 int read_buffer(){
   printf("\033[1;36m");
   char buffer[1024],*a;
@@ -18,10 +33,9 @@ int read_buffer(){
   return number;
 }
 
-
 GAME* init_board(int size){
 
-    float l = (float) size;
+    float l = (float) size-1;
 
     GAME * pGame = (GAME*)malloc(sizeof(GAME));
 
@@ -33,15 +47,86 @@ GAME* init_board(int size){
     pGame->root2->cx /=2;
     pGame->root2->cy /=2;
     
-    info1 = (CHAR*) malloc(size*size*sizeof(CHAR));
-    info2 = (CHAR*) malloc(size*size*sizeof(CHAR));
+    info1 = (char*) malloc(size*size*sizeof(char));
+    info2 = (char*) malloc(size*size*sizeof(char));
+
+    for(int i = 0; i<size*size; i++){
+        info1[i] = _NO_SHOT;
+        info2[i] = _NO_SHOT;
+    }
+
 
     
   return pGame;
 }
 
 
-// inserção do navio no tabuleiro
+void print_game(char *info,int size){
+  printf("\033[1;36m");
+  printf("   ");
+  for(int i=0;i<size;i++){
+    if(i<10) printf(" %d ",i);
+    else printf("%d ",i);
+  }
+  printf("\n");
+  printf("\n");
+
+  for(int i=0;i<size;i++){
+    if(i<10) printf(" %d ",i);
+    else printf("%d ",i);
+    for(int j=0;j<size;j++){
+      if(info[i*size + j] == _NO_HIT){
+        //green
+        printf("\033[1;32m");
+        printf(" %c ",info[i*size + j]);
+        printf("\033[1;36m");
+      }
+      else printf(" %c ",info[i*size + j]);
+    }
+    printf("\n");
+  }
+}
+
+void print_secret_board(char* info,int size){
+    printf("\033[1;36m");
+  printf("   ");
+  for(int i=0;i<size;i++){
+    if(i<10) printf(" %d ",i);
+    else printf("%d ",i);
+  }
+  printf("\n");
+  printf("\n");
+
+  for(int i=0;i<size;i++){
+      
+    if(i<10) printf(" %d ",i);
+    else printf("%d ",i);
+    for(int j=0;j<size;j++){
+      if(info[i*size + j] == _NO_HIT || info[i*size + j] == _NO_SHOT){
+        //cyan
+        printf("\033[1;36m");
+        printf(" %c ",EMPTY);
+      }
+
+      else if(info[i*size + j] == _HIT_CELL){
+        //green
+        printf("\033[1;32m");
+        printf(" %c ",info[i*size + j]);
+        printf("\033[1;36m");
+      }
+
+      else if(info[i*size + j] == _MISSED_SHOT){
+        //red
+        printf("\033[1;31m");
+        printf(" %c ",info[i*size + j]);
+        printf("\033[1;36m");
+      }
+    }
+    printf("\n");
+  }
+}
+
+
 int verify_insert(QD_NODE* insert, QD_NODE* root, POINT* points){
   int x = insert->node.leaf.p->x;
   int y = insert->node.leaf.p->y;
@@ -74,7 +159,8 @@ int verify_insert(QD_NODE* insert, QD_NODE* root, POINT* points){
 }
 
 //insert_ship
-void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root){
+void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,int map){
+  int size = (int) root->level +1;
   QD_NODE* insert = create_node(root->level/2.0);
   *insert->node.leaf.p = *p;
   *insert->node.leaf.ship = *ship;
@@ -88,7 +174,7 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root){
     printf("X: "); scanf("%d",&p->x);
     printf("Y: "); scanf("%d",&p->y);
     printf("\n");
-    insert_ship(p,points,ship,root);
+    insert_ship(p,points,ship,root,map);
   }
   else{
     //POINT *point_array = (POINT*) malloc(ship->size*sizeof(POINT));
@@ -98,11 +184,15 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root){
       //printf("node to insert:(%d,%d)\n",points[i].x,points[i].y);
       *insert->node.leaf.p = points[i];
       (void)node_insert(root,insert);
+      if(map == 1) info1[points[i].x*size + points[i].y]=_NO_HIT;
+      else if(map == 2) info2[points[i].x*size + points[i].y]=_NO_HIT;
 
     }
     //free(point_array);
     //point_array = NULL;
   }
+      
+    
 }
 
 int generate_number(int a,int b){
@@ -166,8 +256,10 @@ void rand_insert_ships(QD_NODE* root1,QD_NODE* root2){
       //p2->y = n2->node.leaf.p->y;
 
       //insert
-      insert_ship(p1,point_array1,newship1,root1);
-      insert_ship(p2,point_array2,newship2,root2);
+      
+      insert_ship(p1,point_array1,newship1,root1,1);
+      insert_ship(p2,point_array2,newship2,root2,2);
+   
 
       free(p1);
       free(p2);
@@ -179,7 +271,9 @@ void rand_insert_ships(QD_NODE* root1,QD_NODE* root2){
 }
 
 //Users
+
 void user_insert(GAME* g){
+    int size = (int) g->root1->level +1;
   int boat_types[]={2,3,4,5,7,9};
   char *boats[]={"Destroyer","Cruiser","Battleship","Carrier","Sigma","Pickaxe"};
   int boat_rotation,player;
@@ -206,8 +300,8 @@ void user_insert(GAME* g){
         POINT* points = (POINT*) malloc(boat_types[i]*sizeof(POINT));
 
         //print map during insertion
-        if(player == 1) print_game(map1);
-        else print_game(map2);
+        if(player == 1) print_game(info1,size);
+        else print_game(info2,size);
 
         printf("\033[1;35m");
         printf("               Player %d: \n",player);
@@ -232,12 +326,12 @@ void user_insert(GAME* g){
         //player 1 inserts('insert_ship' asks for new coordinates if needed)
         if(player == 1){
           create_ship(newship,boat_rotation,boat_types[i]);
-          insert_ship(p,points,newship,g->root1);
+          insert_ship(p,points,newship,g->root1,1);
         }
         //player2 inserts('insert_ship' asks for new coordinates if needed)
         else{
           create_ship(newship,boat_rotation,boat_types[i]);
-          insert_ship(p,points,newship,g->root2);
+          insert_ship(p,points,newship,g->root2,2);
         }
       }
     }
@@ -245,7 +339,8 @@ void user_insert(GAME* g){
 }
 
 //atack ship
-int attack(int x, int y, QD_NODE* root, char map){
+int attack(int x, int y, QD_NODE* root,int player){
+    int size = root->level+1;
   //ask for new coordinates if user selects out of bounds position
   if(x>root->level || y>root->level){
     do{
@@ -277,7 +372,8 @@ int attack(int x, int y, QD_NODE* root, char map){
       //update bitmap
       get->node.leaf.ship->bitmap[bitmap_x][bitmap_y] = HIT;
       //update CELL
-      map[x1*size+y1] = _HIT_CELL;
+      if(player == 1) info1[x1*size+y1] = _HIT_CELL;
+      else if(player == 2) info2[x1*size+y1] = _HIT_CELL;
       get->node.leaf.ship->size -= 1;
       node_delete(root,get->node.leaf.p->x,get->node.leaf.p->y);
       printf("Hit!\n");
@@ -323,4 +419,24 @@ int attack(int x, int y, QD_NODE* root, char map){
     }
   }
   return -1;
+}
+
+
+int main(){
+    srand(time(NULL));
+int size = 20;
+GAME *game;
+
+game = init_board(20);
+
+rand_insert_ships(game->root1,game->root2);
+//print_tree(game->root1,19);
+
+print_game(info1,size);
+
+print_game(info2,size);
+
+return 0;
+
+
 }
