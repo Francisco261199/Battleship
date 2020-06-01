@@ -12,6 +12,8 @@ Instalação(Linux):
 2-Correr o comando "make" no terminal nessa mesma pasta.
 3-Correr o comando "./Battleship".
 
+Instalação QUADTREE:
+Depois de extrair o zip, correr o comando "make quadtree" e executar com ./battleship
 
 Desisntalar: 
 1-Correr o comando "make clean" na pasta de instalação.
@@ -132,7 +134,49 @@ print_boat -- imprime o bitmap do navio.
 read_buffer -- lê input de forma a evitar erros relacionados com tipos diferentes.
                     Ex: é pedido um inteiro e o jogador escreve uma string.
 
+----------------------------------------------------------------QUADTREE----------------------------------------------------------------------
 
+
+ESTRUTURAS:
+
+POINT : guarda duas coordenadas, x e y, que representam um ponto.
+QD_TNODE : ENUM para distinguir os tipos de nó (leaf(QDLEAF) ou interno(QDNODE)).
+QD_Node_ : nó da árvore, contém o tipo de nó(type), quantos nós estão na arvore(nodes_inside), os floats cx e cy guardam as coordenadas do centro do quadrante
+a que este nó pertence e level a profundidade do nó na árvore(decrescente). Contém também um apontador para o nó pai e contém um ponto e apontador para navio
+se o nó for do tipo QDLEAF ou apontadores para os 4 nós filhos (NW,NE,SW,SE) no caso do nó ser do tipo QDNODE
+GAME: guarda as raízes das árvores do jogador 1 e 2;
+
+info1 = matriz que guarda informações dos pontos(com e sem navio) para o mapa do jogador 1.
+info2 = matriz que guarda informações dos pontos(com e sem navio) para o mapa do jogador 2.
+
+Funções da QUADTREE
+make_point : guarda um valor x e y numa estrutura point.
+print_tree : imprime os endereços da árvore, usada para debug.
+get_parent : devolve o nó pai
+get_last_child : devolve o primeiro filho do nó(no contexto em que é aplicada devolve o unico filho).
+create_node : cria um nó do tipo QD_LEAF.
+node_clean : ??????
+expand_tree : 
+get_next : 
+get_subdivision : Encontra a posição em que as coordenadas repetidas deverão ser inseridas.
+divide_insert : 
+node_insert : insere um nó na árvore.
+node_delete : remove um nó da árvore.
+search_point : procura um ponto na árvore.
+
+
+
+Funções da Boardq:
+No geral estas funções funcionam da mesma maneira que as funções do board.c mas existem algumas alteraçoes:
+
+init_board: cria dois nós para servirem de raiz para a arvore do jogador 1 e 2. tambem inicializa dois arrays unidimensionais (info1 e info2)
+com tamanho igual a size*size e valores a 0.
+
+verify_insert: recebendo o ponto do meio est função agora cria um array com todos os pontos a inserir na árvore.
+
+insert_ship = insere os nós com os pontos e apontadores para navios na árvore e atualiza o array info do jogador respectivo.
+
+attack: funciona da mesma forma que a da board.c mas a verificação para ataques repetidos é feita em O(1) com info[x*size + y].
 
 
 
