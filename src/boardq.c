@@ -339,7 +339,7 @@ void user_insert(GAME* g){
 }
 
 //atack ship
-int attack(int x, int y, QD_NODE* root, char *info){
+int attack(int x, int y, QD_NODE* root, char* info){
   //ask for new coordinates if user selects out of bounds position
   if(x>root->level || y>root->level){
     do{
@@ -351,63 +351,59 @@ int attack(int x, int y, QD_NODE* root, char *info){
       printf("\n");
     }while(x>root->level || y>root->level);
   }
-
+  int size = (int)root->level + 1;
   printf("\033[1;36m");
+  //boat piece already hit
+  if(info[x*size+y] == HIT){
+    printf("Already hit(with boat)! Please try again\n");
+    //get new coodinates
+    printf("X: "); x = read_buffer();
+    printf("Y: "); y = read_buffer();
+    printf("\n");
+    attack(x,y,root,info);
+    return 0;
+  }
 
-  QD_NODE* get = get_subdivision(x,y,root->level/2.0,root->level/2.0,root->level/2.0,root,2);
-  int x1,y1,size;
-  x1 = (int)get->node.leaf.p->x;
-  y1 = (int)get->node.leaf.p->y;
-  size = (int)root->level + 1;
   //has ship
-  if(get->node.leaf.p->x != -1){
-    //update nodes(nodes inside)
-    (void)get_subdivision(x,y,root->level/2.0,root->level/2.0,root->level/2.0,root,0);
+  if(info[x*size+y] == _NO_HIT){
+    QD_NODE* get = get_subdivision(x,y,root->level/2.0,root->level/2.0,root->level/2.0,root,2);
+    int x1,y1;
+    x1 = (int)get->node.leaf.p->x;
+    y1 = (int)get->node.leaf.p->y;
+
     //conversion to bitmap coordinates(map(x,y)->bitmap(x,y))
     int bitmap_x = 2+(x-get->node.leaf.ship->x);
     int bitmap_y = 2+(y-get->node.leaf.ship->y);
+    //printf("bitmap(%d,%d)\n",get->node.leaf.ship->x,get->node.leaf.ship->y);
 
     //boat piece not hit
-    if(get->node.leaf.ship->bitmap[bitmap_x][bitmap_y] == NOT_HIT){
-      //update bitmap
-      get->node.leaf.ship->bitmap[bitmap_x][bitmap_y] = HIT;
-      //update CELL
-      info[x1*size+y1] = _HIT_CELL;
-      get->node.leaf.ship->size -= 1;
-      //ship fully destroyed
-      if(get->node.leaf.ship->size == 0){
-        printf("Ship Destroyed!\n");
-        return 1;
-      }
-      node_delete(root,get->node.leaf.p->x,get->node.leaf.p->y);
-      printf("Hit!\n");
-      return 0;
+    //update bitmap
+    get->node.leaf.ship->bitmap[bitmap_x][bitmap_y] = HIT;
+    //update CELL
+    info[x1*size+y1] = _HIT_CELL;
+    get->node.leaf.ship->size -= 1;
+    //ship fully destroyed
+    if(get->node.leaf.ship->size == 0){
+      printf("Ship Destroyed!\n");
+      return 1;
     }
-
-    //boat piece already hit
-    if(info[x1*size+y1] == HIT){
-      printf("Already hit(with boat)! Please try again\n");
-      //get new coodinates
-      printf("X: "); x = read_buffer();
-      printf("Y: "); y = read_buffer();
-      printf("\n");
-      attack(x,y,root,info);
-      return 0;
-    }
+    node_delete(root,get->node.leaf.p->x,get->node.leaf.p->y);
+    printf("Hit!\n");
+    return 0;
   }
 
   //no boat(water)
   else{
     //non-attacked position
-    if(get->node.leaf.ship == NULL && info[x1*size+y1] == _NO_SHOT){
+    if(info[x*size+y] == _NO_SHOT){
       printf("Miss!No Boat!\n");
       printf("\n");
       //update CELL
-      info[x1*size+y1] = _MISSED_SHOT;
+      info[x*size+y] = _MISSED_SHOT;
       return 0;
     }
     //already attacked position
-    if(info[x1*size+y1] == _MISSED_SHOT){
+    if(info[x*size+y] == _MISSED_SHOT){
       printf("Already hit(without boat)! Please try again\n");
       //get new coodinates
       printf("X: "); x = read_buffer();
