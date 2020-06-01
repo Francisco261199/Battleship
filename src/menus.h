@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include "ships.h"
-#include "board.h"
+//#include "board.h"
 
 
 // MACROS
@@ -23,9 +23,13 @@
 
 
 //variables
+#ifdef VARS
 int n_boats,map_size,rand_flag;
 int n_for_each_boat[6];
-
+#else
+extern int n_boats,map_size,rand_flag;
+extern int n_for_each_boat[6];
+#endif
 //functions
 int menu();
 

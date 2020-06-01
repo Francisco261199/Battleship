@@ -4,10 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "quadtree.h"
-#include "ships.h"
-#include "time.h"
-#include "menus.h"
-
+//#include "ships.h"
+#include <time.h>
+//#include "menus.h"
 
 
 //Flags for bitmap
@@ -32,10 +31,14 @@ typedef struct{
 
 
 
+#ifdef INFO
+char * info1;
+char * info2;
+#else
+extern char *info1;
+extern char *info2;
+#endif
 
-
-char *info1;
-char *info2;
 
 int read_buffer();
 GAME* init_board(int size);
