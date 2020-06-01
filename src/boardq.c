@@ -17,10 +17,9 @@
 #define _HIT_CELL '2'
 #define _MISSED_SHOT '3'
 
-char *info1;
-char *info2;
-int n_for_each_boat[6] = {1,1,1,1,1,1};
 
+char * info1;
+char * info2;
 
 int read_buffer(){
   printf("\033[1;33m");
@@ -172,8 +171,8 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,char *info){
     printf("ERROR! You can't insert the boat here!\n");
     printf("\033[1;33m");
     printf("Please choose another position.\n");
-    printf("X: "); p->x = read_buffer();
-    printf("Y: "); p->y = read_buffer();
+    printf("X: ");p->x = read_buffer();
+    printf("Y: ");p->y = read_buffer();
     printf("\n");
     insert_ship(p,points,ship,root,info);
   }
@@ -203,7 +202,7 @@ int generate_number(int a,int b){
 void rand_insert_ships(GAME* g){
   int boat_types[]={2,3,4,5,7,9};
   int map_size,rotation,verify;
-  map_size =g->root1->level;
+  map_size =(int) g->root1->level;
 
 
   //printf("flag 1");
@@ -421,15 +420,41 @@ int attack(int x, int y, QD_NODE* root, char *info){
 }
 
 
+GAME *erase_game(GAME* g){
+    free(info1);
+    info1=NULL;
+    free(info2);
+    info2=NULL;
+
+    free(g->root1);
+    g->root1 = NULL;
+    free(g->root2);
+    g->root2 = NULL;
+
+    free(g);
+    g=NULL;
+
+    return NULL;
+
+}
+
+/*
 int main(){
-    srand(time(NULL));
+
+srand(time(NULL));
 int size = 20;
 GAME *game;
 
 game = init_board(20);
 
-user_insert(game);
+rand_insert_ships(game);
 //print_tree(game->root1,19);
+
+
+int x = read_buffer();
+int y = read_buffer();
+
+attack(x,y,game->root1,info1);
 
 print_game(info1,size);
 
@@ -439,3 +464,5 @@ return 0;
 
 
 }
+
+*/
