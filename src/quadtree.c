@@ -236,10 +236,6 @@ void divide_insert(QD_NODE* root, QD_NODE* copy, QD_NODE* n){
   *q2->node.leaf.p = *n->node.leaf.p;
   q2->nodes_inside = 1;
 
-  //q1 = NULL;
-  //q2 = NULL;
-  //free(q1);
-  //free(q2);
 }
 
 int node_insert(QD_NODE* root,QD_NODE* n){
@@ -292,7 +288,7 @@ int node_insert(QD_NODE* root,QD_NODE* n){
 }
 
 //find and delete a node
-int node_delete(QD_NODE* root, int x, int y, int l){
+int node_delete(QD_NODE* root, int x, int y){
   if(root == NULL){
     printf("No tree found\n");
     return -1;
@@ -350,7 +346,6 @@ int search_point(POINT* p,QD_NODE* root){
 
   return 1;
 }
-
 
 /*
 POINT* create_points(POINT* p, SHIP* ship){
