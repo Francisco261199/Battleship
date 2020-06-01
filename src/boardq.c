@@ -5,6 +5,18 @@
 #include "boardq.h"
 #include "time.h"
 
+//read buffer to avoid errors when typing chars or strings instead of int
+int read_buffer(){
+  printf("\033[1;36m");
+  char buffer[1024],*a;
+  int number;
+  while(fgets(buffer,sizeof(buffer),stdin)){
+    number = (int)strtol(buffer,&a,10);
+    if(a == buffer || *a !='\n') printf("Invalid type. Please type integer:");
+    else break;
+  }
+  return number;
+}
 
 
 GAME* init_board(int size){
@@ -29,6 +41,7 @@ GAME* init_board(int size){
 }
 
 
+// inserção do navio no tabuleiro
 int verify_insert(QD_NODE* insert, QD_NODE* root, POINT* points){
   int x = insert->node.leaf.p->x;
   int y = insert->node.leaf.p->y;
@@ -169,7 +182,7 @@ void rand_insert_ships(QD_NODE* root1,QD_NODE* root2){
 void user_insert(GAME* g){
   int boat_types[]={2,3,4,5,7,9};
   char *boats[]={"Destroyer","Cruiser","Battleship","Carrier","Sigma","Pickaxe"};
-  int x,y,boat,rotation,boat_rotation,player;
+  int boat_rotation,player;
   player = 1;
   system("clear");
   printf("\033[1;31m");
@@ -189,10 +202,12 @@ void user_insert(GAME* g){
       for(int j=0;j<n_for_each_boat[i];j++){
         system("clear");
         SHIP* newship = (SHIP*) malloc(sizeof(SHIP));
+        POINT* p = (POINT*) malloc(sizeof(POINT));
+        POINT* points = (POINT*) malloc(boat_types[i]*sizeof(POINT));
 
         //print map during insertion
-        if(player == 1) print_game(g->map1,g->size);
-        else print_game(g->map2,g->size);
+        if(player == 1) print_game(map1);
+        else print_game(map2);
 
         printf("\033[1;35m");
         printf("               Player %d: \n",player);
@@ -210,21 +225,102 @@ void user_insert(GAME* g){
           scanf("%d",&boat_rotation);
         }
         printf("X:");
-        x = read_buffer();
+        p->x = read_buffer();
         printf("Y:");
-        y = read_buffer();
+        p->y = read_buffer();
 
         //player 1 inserts('insert_ship' asks for new coordinates if needed)
         if(player == 1){
           create_ship(newship,boat_rotation,boat_types[i]);
-          insert_ship(x,y,newship,g->map1,g->size);
+          insert_ship(p,points,newship,g->root1);
         }
         //player2 inserts('insert_ship' asks for new coordinates if needed)
         else{
           create_ship(newship,boat_rotation,boat_types[i]);
-          insert_ship(x,y,newship,g->map2,g->size);
+          insert_ship(p,points,newship,g->root2);
         }
       }
     }
   }
+}
+
+//atack ship
+int attack(int x, int y, QD_NODE* root, char map){
+  //ask for new coordinates if user selects out of bounds position
+  if(x>root->level || y>root->level){
+    do{
+      printf("\033[1;31m");
+      printf("Out of bounds. Insert new position:\n");
+      printf("\033[1;36m");
+      printf("X: ");x = read_buffer();
+      printf("Y: ");y = read_buffer();
+      printf("\n");
+    }while(x>root->level || y>root->level);
+  }
+
+  printf("\033[1;36m");
+
+  QD_NODE* get = get_subdivision(x,y,root->level/2.0,root->level/2.0,root->level/2.0,root,2);
+  int x1,y1,size;
+  x1 = (int)get->node.leaf.p->x;
+  y1 = (int)get->node.leaf.p->y;
+  size = (int)root->level + 1;
+  //has ship
+  if(get->node.leaf.ship != NULL){
+
+    //conversion to bitmap coordinates(map(x,y)->bitmap(x,y))
+    int bitmap_x = 2+(x-get->node.leaf.ship->x);
+    int bitmap_y = 2+(y-get->node.leaf.ship->y);
+
+    //boat piece not hit
+    if(get->node.leaf.ship->bitmap[bitmap_x][bitmap_y] == NOT_HIT){
+      //update bitmap
+      get->node.leaf.ship->bitmap[bitmap_x][bitmap_y] = HIT;
+      //update CELL
+      map[x1*size+y1] = _HIT_CELL;
+      get->node.leaf.ship->size -= 1;
+      node_delete(root,get->node.leaf.p->x,get->node.leaf.p->y);
+      printf("Hit!\n");
+      //ship fully destroyed
+      if(get->node.leaf.ship->size == 0){
+        printf("Ship Destroyed!\n");
+        return 1;
+      }
+      return 0;
+    }
+
+    //boat piece already hit
+    if(map[x1*size+y1] == HIT){
+      printf("Already hit(with boat)! Please try again\n");
+      //get new coodinates
+      printf("X: "); x = read_buffer();
+      printf("Y: "); y = read_buffer();
+      printf("\n");
+      attack(x,y,root,map);
+      return 0;
+    }
+  }
+
+  //no boat(water)
+  else{
+    //non-attacked position
+    if(get->node.leaf.ship == NULL && map[x1*size+y1] == _NO_SHOT){
+      printf("Miss!No Boat!\n");
+      printf("\n");
+      //update CELL
+      map[x1*size+y1] = _MISSED_SHOT;
+      return 0;
+    }
+    //already attacked position
+    if(map[x1*size+y1] == _MISSED_SHOT){
+      printf("Already hit(without boat)! Please try again\n");
+      //get new coodinates
+      printf("X: "); x = read_buffer();
+      printf("Y: "); y = read_buffer();
+      printf("\n");
+      attack(x,y,root,map);
+      return 0;
+    }
+  }
+  return -1;
 }
