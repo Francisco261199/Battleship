@@ -361,7 +361,8 @@ int attack(int x, int y, QD_NODE* root, char *info){
   size = (int)root->level + 1;
   //has ship
   if(get->node.leaf.p->x != -1){
-
+    //update nodes(nodes inside)
+    (void)get_subdivision(x,y,root->level/2.0,root->level/2.0,root->level/2.0,root,0);
     //conversion to bitmap coordinates(map(x,y)->bitmap(x,y))
     int bitmap_x = 2+(x-get->node.leaf.ship->x);
     int bitmap_y = 2+(y-get->node.leaf.ship->y);
