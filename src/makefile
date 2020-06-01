@@ -14,7 +14,7 @@ ships.o: ships.c
 	gcc -c ships.c
 menus.o: menus.c
 	gcc -c menus.c -lncurses
-clean:
-	rm battleship *.o 
 quadtree: mainq.o boardq.o quadtree.o ships.o menus.o
 	gcc -o battleship mainq.o boardq.o quadtree.o ships.o menus.o -lncurses
+clean:
+	rm -rf *.o 
