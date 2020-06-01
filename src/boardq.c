@@ -8,7 +8,7 @@
 
 char *info1;
 char *info2;
-int n_for_each_boat[6] = {1,1,1,1,1,1};
+
 
 //read buffer to avoid errors when typing chars or strings instead of int
 int read_buffer(){
@@ -402,34 +402,49 @@ int attack(int x, int y, QD_NODE* root, char* info){
   }
   return -1;
 }
+GAME *erase_game(GAME* g){
+    free(info1);
+    info1=NULL;
+    free(info2);
+    info2=NULL;
 
-int main(){
-    srand(time(NULL));
-    int size = 20;
-    GAME* game = init_board(20);
-    rand_insert_ships(game);
+    free(g->root1);
+    g->root1 = NULL;
+    free(g->root2);
+    g->root2 = NULL;
 
-    print_game(info1,size);
-    print_game(info2,size);
-    int x,y;
+    free(g);
+    g=NULL;
 
-    printf("type x y:");
-    x = read_buffer();
-    y = read_buffer();
-    print_tree(game->root2,size-1);
-    printf("END_______________\n");
-    attack(x,y,game->root2,info2);
-    print_game(info2,size);
-    print_secret_board(info2,size);
+    return NULL;
 
-    printf("type x y:");
-    x = read_buffer();
-    y = read_buffer();
-    attack(x,y,game->root2,info2);
-    print_game(info2,size);
-    print_secret_board(info2,size);
-
-    print_tree(game->root2,size-1);
-    printf("END__________________\n");
-return 0;
 }
+
+/*
+int main(){
+
+srand(time(NULL));
+int size = 20;
+GAME *game;
+
+game = init_board(20);
+
+rand_insert_ships(game);
+//print_tree(game->root1,19);
+
+
+int x = read_buffer();
+int y = read_buffer();
+
+attack(x,y,game->root1,info1);
+
+print_game(info1,size);
+
+print_game(info2,size);
+
+return 0;
+
+
+}
+
+*/
