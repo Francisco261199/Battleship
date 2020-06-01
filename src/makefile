@@ -17,4 +17,4 @@ ships.o: ships.c
 menus.o: menus.c
 	gcc -c menus.c -lncurses
 clean:
-	rm -rf *.o 
+	rm -rf battleship *.o 
