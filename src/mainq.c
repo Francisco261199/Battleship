@@ -9,7 +9,7 @@
 
 void game(){
   int player,n;
-  int x,y; 
+  int x,y;
   player = 1;
   //color Cyan
   printf("\033[1;36m");
@@ -23,9 +23,9 @@ void game(){
 
   if(rand_flag==1) rand_insert_ships(gameboard);
   else user_insert(gameboard);
-  
+
   system("clear");
-  printf("Boats inserted succsefully! When you're both ready press ENTER to start!\n");
+  printf("Boats inserted successfully! When you're both ready press ENTER to start!\n");
   getchar();
 
   while(TRUE){
@@ -37,22 +37,22 @@ void game(){
     printf("Positions hit:\n");
 
     //print boats in map
-    if(player == 1) print_secret_board(info2,map_size);
-    else print_secret_board(info1,map_size);
+    if(player == 1) print_game(info2,map_size);
+    else print_game(info1,map_size);
 
 
     //get coordinates
     printf("Select coordinates to attack:\n");
-    printf("X: ");scanf("%d",&x);for(int c; (c = getchar()) != '\n' && c != EOF ;); 
-    printf("Y: ");scanf("%d",&y);for(int c; (c = getchar()) != '\n' && c != EOF ;);
+    printf("X: ");x = read_buffer();
+    printf("Y: ");y = read_buffer();
 
   if(x>(map_size-1) || y>(map_size-1) || x < 0 || y < 0){
     do{
       printf("\033[1;31m");
       printf("Out of bounds. Insert new position:\n");
       printf("\033[1;36m");
-      printf("X: ");scanf("%d",&x);for(int c; (c = getchar()) != '\n' && c != EOF ;);
-      printf("Y: ");scanf("%d",&y);for(int c; (c = getchar()) != '\n' && c != EOF ;);printf("\n");
+      printf("X: ");x = read_buffer();
+      printf("Y: ");y = read_buffer();printf("\n");
     }while(x>(map_size-1) || y>(map_size-1) || x < 0 || y < 0);
   }
     //player x attacks selected position
