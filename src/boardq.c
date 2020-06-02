@@ -12,12 +12,16 @@ char *info2;
 
 //read buffer to avoid errors when typing chars or strings instead of int
 int read_buffer(){
-  printf("\033[1;33m");
+  printf("\033[1;36m");
   char buffer[1024],*a;
   int number;
   while(fgets(buffer,sizeof(buffer),stdin)){
     number = (int)strtol(buffer,&a,10);
-    if(a == buffer || *a !='\n') printf("Invalid type. Please type integer:");
+    if(a == buffer || *a !='\n'){
+      printf("\033[1;31m");
+      printf("Invalid type. Please type integer:");
+      printf("\033[1;36m");
+   }
     else break;
   }
   return number;
