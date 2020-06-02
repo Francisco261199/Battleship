@@ -8,7 +8,7 @@
 
 char *info1;
 char *info2;
-
+//int n_for_each_boat[6] = {1,1,1,1,1,1};
 
 //read buffer to avoid errors when typing chars or strings instead of int
 int read_buffer(){
@@ -136,15 +136,14 @@ int verify_insert(QD_NODE* insert, QD_NODE* root, POINT* points){
       //out of bounds
       else if( ((x+i-2) > root->level || (y+j-2) > root->level || (x+i-2) < 0 || (y+j-2) < 0 ) &&
                 insert->node.leaf.ship->bitmap[i][j] != EMPTY) return 1;
-      //insert is possible for given position
-       aux = get_subdivision((x+i-2),(y+j-2),root->level/2.0,root->level/2.0,root->level/2.0,root,2);
-       //printf("POINT to verify:(%d,%d)\n",x+i-2,y+j-2);
+
+      //insert if possible for given position
+      aux = get_subdivision((x+i-2),(y+j-2),root->level/2.0,root->level/2.0,root->level/2.0,root,2);
       if(flag == 1 && insert->node.leaf.ship->bitmap[i][j] == NOT_HIT &&
         (aux->node.leaf.p->x != (x+i-2) || aux->node.leaf.p->y != (y+j-2))){
           points[clear].x = (x+i-2);
           points[clear].y = (y+j-2);
           clear++;
-          //printf("clear=%d\n",clear);
         }
     }
   }
@@ -156,9 +155,9 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,char *info){
   int size = (int) root->level +1;
   QD_NODE* insert = create_node(root->level/2.0);
   *insert->node.leaf.p = *p;
-  *insert->node.leaf.ship = *ship;
-  //printf("Insert(%d,%d)\n",insert->node.leaf.p->x,insert->node.leaf.p->y);
-  //verificar se pode ser inserido
+  insert->node.leaf.ship = ship;
+
+  //verify insertion
   if(verify_insert(insert,root,points) != ship->size){
     printf("\033[1;31m");
     printf("ERROR! You can't insert the boat here!\n");
@@ -173,21 +172,13 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,char *info){
     //insert centers
     insert->node.leaf.ship->x = p->x;
     insert->node.leaf.ship->y = p->y;
-    //POINT *point_array = (POINT*) malloc(ship->size*sizeof(POINT));
-    //point_array=create_points(p,ship);
-    //printf("point:(%d,%d)\n",insert->node.leaf.p->x,insert->node.leaf.p->y);
     for(int i=0 ;i<ship->size;i++){
-      //printf("node to insert:(%d,%d)\n",points[i].x,points[i].y);
       *insert->node.leaf.p = points[i];
       (void)node_insert(root,insert);
       info[points[i].x*size + points[i].y]=_NO_HIT;
-      /*if(i == ship->size/2){
-        insert->node.leaf.ship->x = points[i].x;
-        insert->node.leaf.ship->y = points[i].y;
-      }*/
     }
-    //free(point_array);
-    //point_array = NULL;
+    free(point_array);
+    point_array = NULL;
   }
 }
 
@@ -200,11 +191,10 @@ void rand_insert_ships(GAME* g){
   int map_size,rotation,verify;
   map_size = (int)g->root1->level;
 
-  //printf("flag 1");
 
   for(int i=0;i<6;i++){
     for(int j=0;j<n_for_each_boat[i];j++){
-      //printf("i:%d\n",i);
+
       //create ships
       SHIP* newship1 = (SHIP*) malloc(sizeof(SHIP));
       SHIP* newship2 = (SHIP*) malloc(sizeof(SHIP));
@@ -245,19 +235,10 @@ void rand_insert_ships(GAME* g){
 
       *p1 = *n1->node.leaf.p;
       *p2 = *n2->node.leaf.p;
-      //p1->x = n1->node.leaf.p->x;
-      //p1->y = n1->node.leaf.p->y;
-      //p2->x = n2->node.leaf.p->x;
-      //p2->y = n2->node.leaf.p->y;
 
       //insert
       insert_ship(p1,point_array1,newship1,g->root1,info1);
       insert_ship(p2,point_array2,newship2,g->root2,info2);
-      //free(p1);
-      //free(p2);
-      //p1 = NULL;
-      //p2 = NULL;
-       //printf("flag 5");
     }
   }
 }
@@ -359,23 +340,24 @@ int attack(int x, int y, QD_NODE* root, char* info){
   if(info[x*size+y] == _NO_HIT){
     QD_NODE* get = get_subdivision(x,y,root->level/2.0,root->level/2.0,root->level/2.0,root,2);
     int x1,y1;
-    x1 = (int)get->node.leaf.p->x;
-    y1 = (int)get->node.leaf.p->y;
+    x1 = get->node.leaf.p->x;
+    y1 = get->node.leaf.p->y;
 
     //conversion to bitmap coordinates(map(x,y)->bitmap(x,y))
     int bitmap_x = 2+(x-get->node.leaf.ship->x);
     int bitmap_y = 2+(y-get->node.leaf.ship->y);
-    //printf("bitmap(%d,%d)\n",get->node.leaf.ship->x,get->node.leaf.ship->y);
 
     //boat piece not hit
     //update bitmap
     get->node.leaf.ship->bitmap[bitmap_x][bitmap_y] = HIT;
     //update CELL
-    info[x1*size+y1] = _HIT_CELL;
+    info[x*size+y] = _HIT_CELL;
     get->node.leaf.ship->size -= 1;
+    //printf("ship.size:%d\n",get->node.leaf.ship->size);
     //ship fully destroyed
     if(get->node.leaf.ship->size == 0){
       printf("Ship Destroyed!\n");
+      node_delete(root,get->node.leaf.p->x,get->node.leaf.p->y);
       return 1;
     }
     node_delete(root,get->node.leaf.p->x,get->node.leaf.p->y);
@@ -406,6 +388,7 @@ int attack(int x, int y, QD_NODE* root, char* info){
   }
   return -1;
 }
+
 GAME *erase_game(GAME* g){
     free(info1);
     info1=NULL;
@@ -421,34 +404,4 @@ GAME *erase_game(GAME* g){
     g=NULL;
 
     return NULL;
-
 }
-
-/*
-int main(){
-
-srand(time(NULL));
-int size = 20;
-GAME *game;
-
-game = init_board(20);
-
-rand_insert_ships(game);
-//print_tree(game->root1,19);
-
-
-int x = read_buffer();
-int y = read_buffer();
-
-attack(x,y,game->root1,info1);
-
-print_game(info1,size);
-
-print_game(info2,size);
-
-return 0;
-
-
-}
-
-*/
