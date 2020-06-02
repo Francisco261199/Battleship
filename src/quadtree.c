@@ -278,6 +278,6 @@ int node_delete(QD_NODE* root, int x, int y){
   }
 
   child = NULL;
-  //node_clean(parent);
+  node_clean(parent);
   return 1;
 }
