@@ -153,13 +153,13 @@ Funções da QUADTREE
 make_point : guarda um valor x e y numa estrutura point.
 print_tree : imprime os endereços da árvore, usada para debug.
 get_parent : devolve o nó pai
-get_last_child : devolve o primeiro filho do nó(no contexto em que é aplicada devolve o unico filho).
-create_node : cria um nó do tipo QD_LEAF.
-node_clean : ??????
-expand_tree : 
-get_next : 
+get_last_child : devolve o primeiro filho de um nó(no contexto em que é aplicada devolve o único filho).
+create_node : cria um nó do tipo QD_LEAF e inicializa todos os argumentos necessários.
+node_clean : liberta os apontadores
+expand_tree : cria uma subdivisão do mapa expandindo o nó atual para 4 filhos e faz os cálculos dos centros para cada nó
+get_next : devolve o nó seguinte na árvore durante a procura(usada apenas na inserção de nós)
 get_subdivision : Encontra a posição em que as coordenadas repetidas deverão ser inseridas.
-divide_insert : 
+divide_insert : expande árvore sempre que ao verificar a posição de dois nós obtem a mesma.
 node_insert : insere um nó na árvore.
 node_delete : remove um nó da árvore.
 search_point : procura um ponto na árvore.
