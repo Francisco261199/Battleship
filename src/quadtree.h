@@ -37,10 +37,6 @@ typedef struct QD_Node_ {
   } node;
 } QD_NODE;
 
-typedef struct{
-    QD_NODE* root1;
-    QD_NODE* root2;
-} GAME;
 
 
 
@@ -58,7 +54,7 @@ QD_NODE* get_next(int x,int y,QD_NODE* save,QD_NODE* root, int flag);
 QD_NODE * get_subdivision(int x,int y,float cx,float cy,float l,QD_NODE* root,int flag);
 void divide_insert(QD_NODE* root, QD_NODE* copy, QD_NODE* n);
 int node_insert(QD_NODE* root,QD_NODE* n);
-int node_delete(QD_NODE* root, int x, int y, int l);
+int node_delete(QD_NODE* root, int x, int y);
 int search_point(POINT* p,QD_NODE* root);
 
 #endif
