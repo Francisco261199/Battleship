@@ -24,7 +24,7 @@
 typedef struct{
     QD_NODE* root1;
     QD_NODE* root2;
-    
+
 } GAME;
 
 
@@ -47,7 +47,7 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,char* info);
 void rand_insert_ships(GAME *g);
 void user_insert(GAME* g);
 void print_secret_board(char* info,int size);
-void print_game(char *info,int size);
+void wallhack(char *info,int size);
 void user_insert(GAME* g);
 int attack(int x, int y, QD_NODE* root, char *info);
 GAME* erase_game(GAME* game);
