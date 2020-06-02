@@ -163,6 +163,7 @@ void get_number_boats(){
 }
 
 int Start_menu(){
+  clear();
   int xMax,yMax,select,highlighted;
   highlighted = 8;
   char *Options[]={"Start Game","Credits","Leave"};
