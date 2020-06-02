@@ -65,18 +65,12 @@ QD_NODE* create_node(float level){
 void node_clean(QD_NODE* e){
   if(e->type == QDLEAF){
     e->node.leaf.ship = NULL;
-    free(e->node.leaf.ship);
-    e->node.leaf.p = NULL;
     free(e->node.leaf.p);
+    e->node.leaf.p = NULL;
     e->parent = NULL;
-    free(e->parent);
     e = NULL;
-    free(e);
   }
-  else{
-    e = NULL;
-    free(e);
-  }
+  else e = NULL;
 }
 
 //expand tree(it is going to have atleast 2 nodes with data)
@@ -284,7 +278,6 @@ int node_delete(QD_NODE* root, int x, int y){
   }
 
   child = NULL;
-  free(child);
   //node_clean(parent);
   return 1;
 }
