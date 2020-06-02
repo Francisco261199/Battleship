@@ -54,7 +54,7 @@ GAME* init_board(int size){
   return pGame;
 }
 
-void print_game(char *info,int size){
+void wallhack(char *info,int size){
   printf("\033[1;36m");
   printf("   ");
   for(int i=0;i<size;i++){
@@ -177,8 +177,8 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,char *info){
       (void)node_insert(root,insert);
       info[points[i].x*size + points[i].y]=_NO_HIT;
     }
-    free(point_array);
-    point_array = NULL;
+    free(points);
+    points = NULL;
   }
 }
 
@@ -272,8 +272,8 @@ void user_insert(GAME* g){
         POINT* points = (POINT*) malloc(boat_types[i]*sizeof(POINT));
 
         //print map during insertion
-        if(player == 1) print_game(info1,size);
-        else print_game(info2,size);
+        if(player == 1) wallhack(info1,size);
+        else wallhack(info2,size);
 
         printf("\033[1;35m");
         printf("               Player %d: \n",player);
