@@ -37,8 +37,8 @@ void game(){
     printf("Positions hit:\n");
 
     //print boats in map
-    if(player == 1) print_game(info2,map_size);
-    else print_game(info1,map_size);
+    if(player == 1) print_secret_board(info2,map_size);
+    else print_secret_board(info1,map_size);
 
 
     //get coordinates
