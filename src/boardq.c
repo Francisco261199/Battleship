@@ -177,9 +177,9 @@ void insert_ship(POINT* p,POINT* points, SHIP* ship, QD_NODE * root,char *info){
       (void)node_insert(root,insert);
       info[points[i].x*size + points[i].y]=_NO_HIT;
     }
-    free(points);
-    points = NULL;
   }
+  free(points);
+  points = NULL;
 }
 
 int generate_number(int a,int b){
@@ -239,6 +239,11 @@ void rand_insert_ships(GAME* g){
       //insert
       insert_ship(p1,point_array1,newship1,g->root1,info1);
       insert_ship(p2,point_array2,newship2,g->root2,info2);
+
+      free(n1);
+      free(n2);
+      n1 = NULL;
+      n2 = NULL;
     }
   }
 }
@@ -299,11 +304,15 @@ void user_insert(GAME* g){
         if(player == 1){
           create_ship(newship,boat_rotation,boat_types[i]);
           insert_ship(p,points,newship,g->root1,info1);
+          free(p);
+          p = NULL;
         }
         //player2 inserts('insert_ship' asks for new coordinates if needed)
         else{
           create_ship(newship,boat_rotation,boat_types[i]);
           insert_ship(p,points,newship,g->root2,info2);
+          free(p);
+          p = NULL;
         }
       }
     }
